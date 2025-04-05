@@ -273,3 +273,15 @@ body {
 .item-price {
   font-size: 1.1rem;
 }
+
+/* Default disabled look */
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Activated state for submit buttons */
+.active-submit {
+  background-color: #8b4900 !important;
+  color: white !important;
+}

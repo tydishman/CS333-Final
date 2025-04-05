@@ -102,3 +102,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === wishlistModal) wishlistModal.style.display = 'none';
   });
 });
+
+function toggleButtonState(form, button) {
+  const requiredFields = form.querySelectorAll("[required]");
+  let allFilled = true;
+
+  requiredFields.forEach(field => {
+    if (!field.value.trim()) {
+      allFilled = false;
+    }
+  });
+
+  if (allFilled) {
+    button.disabled = false;
+    button.classList.add("active-submit");
+  } else {
+    button.disabled = true;
+    button.classList.remove("active-submit");
+  }
+}
+
+// Login Form Button Behavior
+const loginForm = document.querySelector('#loginModal form');
+const loginButton = loginForm?.querySelector('button[type="submit"]');
+loginForm?.addEventListener('input', () => {
+  toggleButtonState(loginForm, loginButton);
+});
+toggleButtonState(loginForm, loginButton); // Initial state
+
+// Signup Form Button Behavior
+const signupForm = document.querySelector('#signupModal form');
+const signupButton = signupForm?.querySelector('button[type="submit"]');
+signupForm?.addEventListener('input', () => {
+  toggleButtonState(signupForm, signupButton);
+});
+toggleButtonState(signupForm, signupButton); // Initial state
