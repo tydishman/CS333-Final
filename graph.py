@@ -42,7 +42,7 @@ def generate_graphs():
     fig_pie.update_layout(
         title_text="Spending Breakdown",
         font=dict(
-            family="Noto Sans, sans-serif",  # Change to your preferred font
+            family="Noto Sans, serif",  # Change to your preferred font
             size=14,  # Change to your preferred font size
             color="#8b4900"  # Change to your preferred font color
         )
@@ -57,10 +57,12 @@ def generate_graphs():
         title_text="Budget vs. Actual Spending",
         yaxis_title="Amount ($)",
         font=dict(
-            family="Noto Sans, sans-serif",  # Change to your preferred font
-            size=14,  # Change to your preferred font size
-            color="#8b4900"  # Change to your preferred font color
-        )
+            family="Noto Sans, serif",
+            size=14,
+            color="#8b4900"
+        ),
+        plot_bgcolor="#fff9f5",   # Inside the graph area
+        paper_bgcolor="#ffffff"   # Around the graph area
     )
 
     # Return HTML representation of the graphs

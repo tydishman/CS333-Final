@@ -45,7 +45,7 @@ def get_user_by_username_or_email(identifier):
             return user
     return None
 
-def addUser(username, email, password):
+def add_user(username, email, password):
     if username in fake_db or email in fake_db:
         return False  # Username already exists
     fake_db[username] = {
@@ -58,7 +58,7 @@ def addUser(username, email, password):
 @app.route("/")
 def landing():
     if 'user' in session:
-        return redirect(url_for("personalView"))
+        return redirect(url_for("personal_view"))
     return render_template("landingPage.html")
 
 
@@ -69,7 +69,7 @@ def about():
     return render_template("about.html")
 
 @app.route("/signup/", methods=["POST"])
-def signUp():
+def sign_up():
     username = request.form.get("username")
     email = request.form.get("email")
     password = request.form.get("password")
@@ -96,7 +96,7 @@ def login():
 
     if user:
         session['user'] = user['username']
-        return redirect(url_for("personalView"))
+        return redirect(url_for("personal_view"))
 
     flash("Invalid username or password", "login_error")
     return redirect(url_for("landing"))
@@ -214,7 +214,7 @@ def logout():
 
 @app.route("/dashboard/")
 @login_required
-def personalView():
+def personal_view():
     if 'user' not in session:
         return redirect(url_for("landing"))
     pie_html, bar_html = graph.generate_graphs() 
