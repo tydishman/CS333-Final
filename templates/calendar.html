@@ -2,8 +2,57 @@
 {% block title %}Monetary Calendar{% endblock %}
 {% block content %}
 
-<div id="main" class="content">
-    <h1> calendar </h1>
-</div>
+<!-- templates/calendar.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar View</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+      /* quick styling for calendar layout */
+      .calendar-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
+      .event-list {
+          margin-top: 20px;
+      }
+      .event {
+          border-bottom: 1px solid #ccc;
+          padding: 10px 0;
+      }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <form action="{{ url_for('calendar') }}" method="get">
+                <input type="hidden" name="month_offset" value="{{ month_offset - 1 }}">
+                <button type="submit">← Prev</button>
+            </form>
+            <h2>{{ current_month }} {{ current_year }}</h2>
+            <form action="{{ url_for('calendar') }}" method="get">
+                <input type="hidden" name="month_offset" value="{{ month_offset + 1 }}">
+                <button type="submit">Next →</button>
+            </form>
+        </div>
+
+        <div class="event-list">
+            {% if events %}
+                {% for event in events %}
+                    <div class="event">
+                        <strong>{{ event.date.strftime('%b %d') }}</strong> — 
+                        {{ event.type.capitalize() }}: ${{ event.amount }} <em>({{ event.description }})</em>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No events for this month.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
 
 {% endblock %}

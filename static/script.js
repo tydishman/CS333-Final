@@ -1,17 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Sidebar logic (if sidebar exists)
+  // --- Sidebar toggle ---
   const openNav = document.getElementById("openNav");
+  const mySidebar = document.getElementById("mySidebar");
   if (openNav) {
     openNav.addEventListener("click", () => {
       document.getElementById("main").style.marginLeft = "18%";
-      const sidebar = document.getElementById("mySidebar");
-      sidebar.style.width = "18%";
-      sidebar.style.display = "block";
+      mySidebar.style.width = "18%";
+      mySidebar.style.display = "block";
       openNav.style.display = "none";
     });
   }
 
-  // Modal elements
+  window.w3_close = () => {
+    document.getElementById("main").style.marginLeft = "0";
+    mySidebar.style.display = "none";
+    openNav.style.display = "inline-block";
+  };
+
+  // --- Auth modals ---
   const loginBtn = document.getElementById('openLogin');
   const signupBtn = document.getElementById('openSignup');
   const loginModal = document.getElementById('loginModal');
@@ -19,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLogin = document.getElementById('closeLogin');
   const closeSignup = document.getElementById('closeSignup');
 
-  // Open modals
   loginBtn?.addEventListener('click', () => {
     loginModal.style.display = 'flex';
   });
@@ -28,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     signupModal.style.display = 'flex';
   });
 
-  // Close modals
   closeLogin?.addEventListener('click', () => {
     loginModal.style.display = 'none';
   });
@@ -37,13 +41,36 @@ document.addEventListener('DOMContentLoaded', () => {
     signupModal.style.display = 'none';
   });
 
-  // Close modal when clicking outside
-  window.addEventListener('click', (e) => {
-    if (e.target === loginModal) loginModal.style.display = 'none';
-    if (e.target === signupModal) signupModal.style.display = 'none';
+  // --- FAB Event Modal ---
+  const openEventBtn = document.getElementById('openEventModal');
+  const eventModal = document.getElementById('eventModal');
+  const closeEventBtn = document.getElementById('closeEventModal');
+
+  openEventBtn?.addEventListener('click', () => {
+    eventModal.style.display = 'flex';
   });
 
-  // Flash messages trigger modals
+  closeEventBtn?.addEventListener('click', () => {
+    eventModal.style.display = 'none';
+    eventModal.querySelector('form')?.reset();
+    document.getElementById("newCategoryInput").style.display = "none";
+  });
+
+  // --- Category toggle ---
+  const categorySelect = document.getElementById("categorySelect");
+  const newCategoryInput = document.getElementById("newCategoryInput");
+
+  categorySelect?.addEventListener("change", () => {
+    if (categorySelect.value === "__new__") {
+      newCategoryInput.style.display = "block";
+      newCategoryInput.querySelector("input").required = true;
+    } else {
+      newCategoryInput.style.display = "none";
+      newCategoryInput.querySelector("input").required = false;
+    }
+  });
+
+  // --- Flash messages ---
   const flashMessages = document.querySelectorAll('.flash');
   flashMessages.forEach(msg => {
     const cat = msg.dataset.category;
@@ -52,6 +79,26 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (cat === 'signup_error') {
       signupModal.style.display = 'flex';
     }
-    alert(msg.textContent); // Replace with styled toast if desired
+    alert(msg.textContent); // TODO: replace with toast
+  });
+
+  // --- Wishlist Modal ---
+  const openWishlistBtn = document.getElementById("openWishlistModal");
+  const closeWishlistBtn = document.getElementById("closeWishlistModal");
+  const wishlistModal = document.getElementById("wishlistModal");
+
+  openWishlistBtn?.addEventListener("click", () => {
+    wishlistModal.style.display = "flex";
+  });
+
+  closeWishlistBtn?.addEventListener("click", () => {
+    wishlistModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === loginModal) loginModal.style.display = 'none';
+    if (e.target === signupModal) signupModal.style.display = 'none';
+    if (e.target === eventModal) eventModal.style.display = 'none';
+    if (e.target === wishlistModal) wishlistModal.style.display = 'none';
   });
 });

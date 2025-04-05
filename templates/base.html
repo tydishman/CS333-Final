@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Budget App</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -15,7 +15,7 @@
 
   <!-- Sidebar -->
   <div id="mySidebar" class="sidebar">
-    <button onclick="w3_close()">☰</button>
+    <button onclick="w3_close()">×</button>
     <ul>
       <li><a href="{{ url_for('personalView') }}">Dashboard</a></li>
       <li><a href="{{ url_for('calendar') }}">Calendar</a></li>
@@ -23,11 +23,57 @@
       <li><a href="{{ url_for('tips') }}">Tips</a></li>
       <li><a href="{{ url_for('budget') }}">Budget</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
-      
     </ul>
   </div>
 
-  {% block content %}{% endblock %}
+  <!-- Floating Button -->
+  <button class="fab" id="openEventModal">+ Add Event</button>
+
+  <!-- Modal for Adding Event -->
+  <div class="fab-modal" id="eventModal">
+    <div class="fab-modal-content">
+      <span class="fab-close-btn" id="closeEventModal">&times;</span>
+      <h3>Add Event</h3>
+      <form method="POST" action="{{ url_for('add_event') }}">
+        <input type="text" name="name" placeholder="Title" required>
+
+        <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+
+        <select id="categorySelect" name="category" required>
+          <option value="">Select Category</option>
+          <option value="Rent">Rent</option>
+          <option value="Groceries">Groceries</option>
+          <option value="Spending">Spending</option>
+          <option value="Paycheck">Paycheck</option>
+          <option value="Savings">Savings</option>
+          <option value="__new__">Add new category...</option>
+        </select>
+
+        <div id="newCategoryInput" style="display: none;">
+          <label for="newCategory">New Category Name</label>
+          <input type="text" id="newCategory" name="newCategory" placeholder="Enter category name">
+        </div>
+
+        <select name="type" required>
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+
+        <input type="date" name="date" required>
+
+        <label>
+          <input type="checkbox" name="recurring"> Recurring?
+        </label>
+
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div id="main">
+    {% block content %}{% endblock %}
+  </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>

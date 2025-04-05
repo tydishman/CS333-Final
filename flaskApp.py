@@ -2,6 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
+from datetime import datetime, timedelta
+from collections import namedtuple
+
+# Temporary structure for events
+Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -47,9 +52,11 @@ def addUser(username, email, password):
     return True
 
 @app.route("/")
-@login_required
 def landing():
+    if 'user' in session:
+        return redirect(url_for("personalView"))
     return render_template("landingPage.html")
+
 
 #make about available before signing in? or just make a lil about section in welcome page
 @app.route("/about")
@@ -58,7 +65,6 @@ def about():
     return render_template("about.html")
 
 @app.route("/signup/", methods=["POST"])
-@login_required
 def signUp():
     username = request.form.get("username")
     email = request.form.get("email")
@@ -69,12 +75,11 @@ def signUp():
         return redirect(url_for("landing"))
 
     # TODO: Save user to DB
-    fake_db.addUser(username, email, password)
+    addUser(username, email, password)
     flash("Sign up successful. You can now log in.", "signup_success")
     return redirect(url_for("landing"))
 
 @app.route("/login/", methods=["POST"])
-@login_required
 def login():
     identifier = request.form.get("username") or request.form.get("email")
     password = request.form.get("password")
@@ -92,17 +97,45 @@ def login():
 @app.route("/calendar/")
 @login_required
 def calendar():
-    return render_template("calendar.html")
+    month_offset = int(request.args.get('month_offset', 0))
+    today = datetime.today()
+    current_month_date = today.replace(day=1) + timedelta(days=month_offset * 30)
+
+    # Fake data for now
+    events = [
+        Event(current_month_date.replace(day=5), 1200, "Freelance Project", "income"),
+        Event(current_month_date.replace(day=12), 250, "Groceries", "expense"),
+        Event(current_month_date.replace(day=18), 75, "Electric Bill", "expense"),
+        Event(current_month_date.replace(day=22), 2000, "Paycheck", "income"),
+    ]
+
+    return render_template("calendar.html", 
+                           current_month=current_month_date.strftime("%B"),
+                           current_year=current_month_date.year,
+                           month_offset=month_offset,
+                           events=events)
+
 
 @app.route("/tips/")
 @login_required
 def tips():
     return render_template("tips.html")
 
-@app.route("/wishlist/")
+wishlist_items = []  # in-memory list for now
+
+@app.route('/wishlist')
 @login_required
 def wishlist():
-    return render_template("wishlist.html")
+    return render_template('wishlist.html', items=wishlist_items)
+
+@app.route('/add-wishlist-item/', methods=['POST'])
+@login_required
+def add_wishlist_item():
+    name = request.form.get('item_name')
+    price = request.form.get('item_price')
+    if name and price:
+        wishlist_items.append({'name': name, 'price': price})
+    return redirect(url_for('wishlist'))
 
 @app.route("/budget/")
 @login_required
@@ -121,6 +154,31 @@ def personalView():
     if 'user' not in session:
         return redirect(url_for("landing"))
     return render_template("dashboard.html")
+
+@app.route("/add_event/", methods=["POST"])
+@login_required
+def add_event():
+    if 'user' not in session:
+        return redirect(url_for("landing"))
+
+    name = request.form.get("name")
+    amount = float(request.form.get("amount"))
+    category = request.form.get("category")
+    new_category = request.form.get("new_category")
+
+    # Use new category if selected
+    final_category = new_category if category == "__new__" and new_category else category
+
+    event_type = request.form.get("type")
+    date_str = request.form.get("date")
+    recurring = 'recurring' in request.form
+
+    print(f"[NEW EVENT] {name} | ${amount} | {final_category} | {event_type} | {date_str} | Recurring: {recurring}")
+
+    # TODO: Save to DB
+
+    flash("Event added successfully!", "event_success")
+    return redirect(url_for("personalView"))
 
 if __name__ == "__main__":
     app.run(debug=True)
