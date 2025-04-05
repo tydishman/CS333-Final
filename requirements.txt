@@ -1,2 +1,2 @@
 sqlite3
-pip install -q -U google-genai
+py -m pip install google.generativeai
