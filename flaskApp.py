@@ -177,7 +177,8 @@ def personalView():
     if 'user' not in session:
         return redirect(url_for("landing"))
     pie_html, bar_html = graph.generate_graphs() 
-    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
+    recent_events = Event.query.order_by(Event.date.desc()).limit(5).all()
+    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html, recent_events = recent_events)
 
 @app.route("/add_event/", methods=["POST"])
 @login_required
@@ -233,6 +234,7 @@ def add_event():
         print(f"[ADD EVENT] {ev.date} - {ev.amount} - {ev.description} ({ev.type})")
 
     flash("Event(s) added successfully!", "event_success")
+    
     return Response(status=HTTPStatus.NO_CONTENT)
 
 
