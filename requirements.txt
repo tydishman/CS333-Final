@@ -1,2 +1,3 @@
 sqlite3
 pip install flask
+py -m pip install google.generativeai
