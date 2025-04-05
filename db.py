@@ -120,15 +120,15 @@ def create_category(user_id, category_name:str):
     conn.close()
 
 # Given a user, returns all transactions of a user
-def get_transactions_of_user(user):
+def get_transactions_of_user(user_id):
     conn = get_db_connection()
-    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (str(user['id'],)))
+    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (user_id,))
     # conn.close()
     return transactions.fetchall()
 
-def get_categories_of_user(user):
+def get_categories_of_user(user_id):
     conn = get_db_connection()
-    categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (str(user['id'],)))
+    categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (user_id,))
     conn.close()
     return categories.fetchall()
 
