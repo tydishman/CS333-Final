@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+
 from werkzeug.security import check_password_hash  # for comparing hashed passwords
 from db import get_user_by_username  # Replace with actual DB import
 
-
 app = Flask(__name__)
+app.secret_key = 'supersecretkey'
 
 @app.route("/")
 def landing():
@@ -14,21 +15,23 @@ def landing():
 def about():
     return render_template("about.html")
 
-@app.route("/signup/", methods=["GET", "POST"])
+@app.route("/signup/", methods=["POST"])
 def signUp():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
 
-        # Placeholder: Add user to database here
-        print(f"New user: {username}, {email}, {password}")
+    if not username or not email or not password:
+        flash("Please fill out all fields.", "signup_error")
+        return redirect(url_for("landing"))
 
-        return redirect(url_for("login"))
+    # TODO: Save user to DB
+    print(f"New user: {username}, {email}, {password}")
 
-    return render_template("signup.html")
-    
-@app.route("/login/", methods=["GET", "POST"])
+    flash("Sign up successful. You can now log in.", "signup_success")
+    return redirect(url_for("landing"))
+
+@app.route("/login/", methods=["POST"])
 def login():
     if request.method == "POST":
         # handle login logic here
@@ -49,7 +52,15 @@ def login():
         return redirect(url_for(""))
     return render_template("login.html")
 
-#need user before calendar??
+    # TODO: Replace with real authentication
+    if username and password:
+        session['user'] = username
+        return redirect(url_for("personalView"))
+    else:
+        flash("Invalid username or password", "login_error")
+        return redirect(url_for("landing"))
+    
+    #need user before calendar??
 @app.route("/calendar/")
 def calendar():
     return render_template("calendar.html")
@@ -73,6 +84,8 @@ def logout():
 
 @app.route("/main/")
 def personalView():
+    if 'user' not in session:
+        return redirect(url_for("landing"))
     return render_template("dashboard.html")
 
 #@app.route("/<username>/")
@@ -82,86 +95,3 @@ def personalView():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-    '''from flask import Flask, render_template, request, redirect, url_for, session
-
-app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Change this to something secure for production
-
-@app.route("/")
-def landing():
-    return render_template("landingPage.html")
-
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
-@app.route("/signup/", methods=["GET", "POST"])
-def signUp():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        # TODO: Add user to database here
-        print(f"New user: {username}, {email}, {password}")
-
-        return redirect(url_for("login"))
-
-    return render_template("signup.html")
-
-@app.route("/login/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        # TODO: Validate user login
-        # This is a placeholder example:
-        if username and password:
-            session['user'] = username
-            return redirect(url_for("personalView"))
-        else:
-            return "Invalid login", 401
-
-    return render_template("login.html")
-
-@app.route("/logout/")
-def logout():
-    session.clear()
-    return redirect(url_for("landing"))
-
-@app.route("/main/")
-def personalView():
-    if 'user' not in session:
-        return redirect(url_for("login"))
-    return render_template("dashboard.html")
-
-@app.route("/calendar/")
-def calendar():
-    if 'user' not in session:
-        return redirect(url_for("login"))
-    return render_template("calendar.html")
-
-@app.route("/tips/")
-def tips():
-    if 'user' not in session:
-        return redirect(url_for("login"))
-    return render_template("tips.html")
-
-@app.route("/wishlist/")
-def wishlist():
-    if 'user' not in session:
-        return redirect(url_for("login"))
-    return render_template("wishlist.html")
-
-@app.route("/budget/")
-def budget():
-    if 'user' not in session:
-        return redirect(url_for("login"))
-    return render_template("budget.html")
-
-if __name__ == "__main__":
-    app.run(debug=True)
-'''

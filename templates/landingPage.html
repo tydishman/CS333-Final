@@ -7,17 +7,66 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
 <body class="landing-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div id="flash-messages" style="display: none;">
+        {% for category, message in messages %}
+          <div class="flash" data-category="{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <div class="landing-container">
     <h1 class="landing-title">Welcome!</h1>
     <h2 class="landing-subtitle">Easily manage your budget and keep track of spending.</h2>
 
     <div class="button-group">
-      <a href="{{ url_for('login') }}" class="landing-btn">Log In</a>
-      <a href="{{ url_for('signUp') }}" class="landing-btn alt">Register</a>
+      <button class="landing-btn" id="openLogin">Log In</button>
+      <button class="landing-btn alt" id="openSignup">Register</button>
+
     </div>
   </div>
 
+  <!-- Login Modal -->
+  <div class="modal" id="loginModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeLogin">&times;</span>
+      <form method="post" action="{{ url_for('login') }}">
+        <div class="mb-3">
+          <label for="login-username" class="form-label">Username or Email</label>
+          <input type="text" class="form-control" id="login-username" name="username" required>
+        </div>
+        <div class="mb-3">
+          <label for="login-password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="login-password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Signup Modal -->
+  <div class="modal" id="signupModal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeSignup">&times;</span>
+      <form method="post" action="{{ url_for('signUp') }}">
+        <div class="mb-3">
+          <label for="signup-username" class="form-label">Username</label>
+          <input type="text" class="form-control" id="signup-username" name="username" required>
+        </div>
+        <div class="mb-3">
+          <label for="signup-email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="signup-email" name="email" required>
+        </div>
+        <div class="mb-3">
+          <label for="signup-password" class="form-label">Password</label>
+          <input type="password" class="form-control" id="signup-password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-success">Sign Up</button>
+      </form>
+    </div>
+  </div>
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
