@@ -4,7 +4,6 @@
 
 <h1>Welcome to your Dashboard</h1>
 <div>{{ pie_html|safe }}</div>
-<div>{{ bar_html|safe }}</div>
 
 <div class="recent-events-card">
     <h2 class="section-title">Recent Events</h2>
@@ -21,6 +20,10 @@
       <p>No recent events.</p>
     {% endif %}
   </div>
+  
+<div>{{ bar_html|safe }}</div>
+
+
 
 {% endblock %}
 
