@@ -1,3 +1,7 @@
 sqlite3
 pip install flask
 py -m pip install google.generativeai
+matplotlib.pyplot
+numpy
+py -m pip install matplotlib.pyplot
+py -m pip install numpy
