@@ -229,12 +229,11 @@ def add_event():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
 
-    name = request.form.get("name")
-    description = request.form.get("description")
-    description = request.form.get("description")
+    name = request.form.get("name").lower()
+    description = request.form.get("description").lower()
     amount = float(request.form.get("amount"))
-    category = request.form.get("category")
-    new_category = request.form.get("newCategory")
+    category = request.form.get("category").lower()
+    new_category = request.form.get("newCategory").lower()
 
     final_category = None
     user_id = session['user_id']

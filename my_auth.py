@@ -1,17 +1,25 @@
 import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+DEFAULT_CATEGORIES = ["rent", "groceries", "spending", "paycheck", "savings"]
+
 # Called by form
 def create_user(username:str, email:str, raw_password:str):
     password_hash = generate_password_hash(raw_password)
     try:
         db.create_user(username, email, password_hash)
+        user_id = db.get_user(username)['id']
+        init_default_categories(user_id, DEFAULT_CATEGORIES)
         # Successfully added a new user
         success = True
     except:
         # Failed to add new user. Display this to caller
         success = False
     return success
+
+def init_default_categories(user_id, categories_to_add):
+    for category in categories_to_add:
+        db.create_category(user_id, category)
 
 # Returns 
 def login_user(identifier:str, raw_password:str):    
