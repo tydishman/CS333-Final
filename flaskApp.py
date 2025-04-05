@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
+import my_auth
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -75,8 +76,12 @@ def signUp():
         return redirect(url_for("landing"))
 
     # TODO: Save user to DB
-    addUser(username, email, password)
-    flash("Sign up successful. You can now log in.", "signup_success")
+    # addUser(username, email, password)
+    success = my_auth.create_user(username, email, password)
+    if(success):
+        flash("Sign up successful. You can now log in.", "signup_success")
+    else:
+        flash("Sign up failed. Please try again", "signup_error")
     return redirect(url_for("landing"))
 
 @app.route("/login/", methods=["POST"])
@@ -84,9 +89,9 @@ def login():
     identifier = request.form.get("username") or request.form.get("email")
     password = request.form.get("password")
 
-    user = get_user_by_username_or_email(identifier)
+    user = my_auth.login_user_from_form(identifier, password)
 
-    if user and check_password_hash(user["password_hash"], password):
+    if user:
         session['user'] = user['username']
         return redirect(url_for("personalView"))
 

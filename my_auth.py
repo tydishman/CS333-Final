@@ -31,7 +31,6 @@ def login_user(identifier:str, raw_password:str):
 
 def login_user_from_form(identifier, password):
     user_flag = login_user(identifier, password)
-    print(user_flag)
     if(user_flag):
         user = db.get_user(identifier)
     else:
