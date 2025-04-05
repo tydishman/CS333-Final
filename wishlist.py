@@ -10,9 +10,19 @@ model = genai.GenerativeModel("gemini-2.0-flash")
 # Define the user's budget
 total_budget = 4000  # Example budget (could be input by the user)
 
-# Function to get Gemini AI's buying advice
-def get_buying_advice(item):
-    prompt = f"Should I buy {item} now or wait for a better deal? Consider discounts, seasonality, and demand trends. make it concise"
+# Recurring payments (amount, frequency)
+recurring_payments = [
+    {"name": "Subscription A", "amount": 1000, "frequency": "monthly"},  # Example monthly subscription
+    {"name": "Loan Payment", "amount": 2500, "frequency": "monthly"}  # Example monthly loan payment
+]
+
+# Function to get Gemini AI's buying advice with remaining budget
+def get_buying_advice(item, remaining_budget):
+    prompt = (f"Should I buy {item} now or wait for a better deal? "
+              f"Consider discounts, seasonality, and demand trends, and other things you might think are helpful. "
+              f"I have ${remaining_budget:.2f} left in my budget. "
+              f"If I don't have enough budget for this item, dont tell me about the other factors and advise me to not buy it. "
+              f"Make it concise and short.")
     response = model.generate_content(prompt)
     return response.text
 
@@ -30,13 +40,20 @@ while True:
     wishlist.append(item)
     prices[item] = price
 
+# Function to calculate if the user has enough budget considering recurring payments
+def calculate_remaining_budget(initial_budget, recurring_payments):
+    remaining_budget = initial_budget
+    for payment in recurring_payments:
+        remaining_budget -= payment["amount"]  # Subtract the recurring payment
+    return remaining_budget
+
 # Show buying advice based on budget and Gemini's recommendation
 print("\n🔹 Buying Recommendations 🔹")
-remaining_budget = total_budget
+remaining_budget = calculate_remaining_budget(total_budget, recurring_payments)
 
 for item in wishlist:
     item_price = prices[item]
-    advice = get_buying_advice(item)
+    advice = get_buying_advice(item, remaining_budget)
 
     print(f"🛒 {item}: {advice}")
     
@@ -47,4 +64,5 @@ for item in wishlist:
         print(f"❌ You don't have enough budget for {item}. You need an additional ${item_price - remaining_budget:.2f}.")
         remaining_budget -= item_price  # Allow the budget to go negative
 
+# Display the remaining budget after considering the recurring payments and item purchases
 print(f"\nRemaining budget: ${remaining_budget:.2f}")
