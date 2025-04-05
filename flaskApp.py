@@ -1,13 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import my_auth
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
 from collections import namedtuple
-import matplotlib.pyplot as plt
 import numpy as np
 import graph
+from calendar import monthrange
+from http import HTTPStatus
 
 # Temporary structure for events
 Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
@@ -102,26 +102,41 @@ def login():
     return redirect(url_for("landing"))
 
     #need user before calendar??
+
 @app.route("/calendar/")
 @login_required
 def calendar():
     month_offset = int(request.args.get('month_offset', 0))
     today = datetime.today()
-    current_month_date = today.replace(day=1) + timedelta(days=month_offset * 30)
+    first_day_of_this_month = today.replace(day=1)
+    
+    # Shift by offset
+    shifted_month = first_day_of_this_month + timedelta(days=month_offset * 30)
+    year = shifted_month.year
+    month = shifted_month.month
 
-    # Fake data for now
+    # Get real first day of shifted month
+    first_day_of_month = datetime(year, month, 1)
+    days_in_month = monthrange(year, month)[1]
+
+    # Sample events for that month
     events = [
-        Event(current_month_date.replace(day=5), 1200, "Freelance Project", "income"),
-        Event(current_month_date.replace(day=12), 250, "Groceries", "expense"),
-        Event(current_month_date.replace(day=18), 75, "Electric Bill", "expense"),
-        Event(current_month_date.replace(day=22), 2000, "Paycheck", "income"),
+        Event(first_day_of_month.replace(day=5), 1200, "Freelance Project", "income"),
+        Event(first_day_of_month.replace(day=12), 250, "Groceries", "expense"),
+        Event(first_day_of_month.replace(day=18), 75, "Electric Bill", "expense"),
+        Event(first_day_of_month.replace(day=22), 2000, "Paycheck", "income"),
     ]
 
-    return render_template("calendar.html", 
-                           current_month=current_month_date.strftime("%B"),
-                           current_year=current_month_date.year,
-                           month_offset=month_offset,
-                           events=events)
+    return render_template(
+        "calendar.html",
+        current_month=first_day_of_month.strftime("%B"),
+        current_year=year,
+        month_offset=month_offset,
+        first_day_of_month=first_day_of_month,
+        days_in_month=days_in_month,
+        events=events
+    )
+
 
 
 @app.route("/tips/")
@@ -164,7 +179,6 @@ def personalView():
     pie_html, bar_html = graph.generate_graphs() 
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
 
-
 @app.route("/add_event/", methods=["POST"])
 @login_required
 def add_event():
@@ -172,23 +186,55 @@ def add_event():
         return redirect(url_for("landing"))
 
     name = request.form.get("name")
+    description = request.form.get("description")
     amount = float(request.form.get("amount"))
     category = request.form.get("category")
-    new_category = request.form.get("new_category")
-
-    # Use new category if selected
+    new_category = request.form.get("newCategory")
     final_category = new_category if category == "__new__" and new_category else category
-
     event_type = request.form.get("type")
     date_str = request.form.get("date")
     recurring = 'recurring' in request.form
+    recurrence_type = request.form.get("recurrence_type")
+    custom_days = request.form.get("custom_days", "")
 
-    print(f"[NEW EVENT] {name} | ${amount} | {final_category} | {event_type} | {date_str} | Recurring: {recurring}")
+    original_date = datetime.strptime(date_str, "%Y-%m-%d")
+    events_to_add = [Event(original_date, amount, description, event_type)]
 
-    # TODO: Save to DB
+    # Generate future recurring events
+    if recurring:
+        for i in range(1, 6):  # Create 6 recurrences for now
+            if recurrence_type == "weekly":
+                next_date = original_date + timedelta(weeks=i)
+                events_to_add.append(Event(next_date, amount, description, event_type))
+            elif recurrence_type == "biweekly":
+                next_date = original_date + timedelta(weeks=i * 2)
+                events_to_add.append(Event(next_date, amount, description, event_type))
+            elif recurrence_type == "monthly":
+                next_month = original_date.month + i
+                year = original_date.year + (next_month - 1) // 12
+                month = (next_month - 1) % 12 + 1
+                try:
+                    next_date = original_date.replace(year=year, month=month)
+                except ValueError:
+                    next_date = original_date.replace(year=year, month=month, day=28)  # Safe fallback
+                events_to_add.append(Event(next_date, amount, description, event_type))
+            elif recurrence_type == "custom_days":
+                days = [int(d.strip()) for d in custom_days.split(",") if d.strip().isdigit()]
+                for m in range(1, 4):  # Next 3 months
+                    for d in days:
+                        try:
+                            next_date = original_date.replace(month=original_date.month + m, day=d)
+                            events_to_add.append(Event(next_date, amount, description, event_type))
+                        except ValueError:
+                            continue
 
-    flash("Event added successfully!", "event_success")
-    return redirect(url_for("personalView"))
+    # TODO: Save these to DB later
+    for ev in events_to_add:
+        print(f"[ADD EVENT] {ev.date} - {ev.amount} - {ev.description} ({ev.type})")
+
+    flash("Event(s) added successfully!", "event_success")
+    return Response(status=HTTPStatus.NO_CONTENT)
+
 
 if __name__ == "__main__":
     app.run(debug = True)

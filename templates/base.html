@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Budget App</title>
+  <title>Rooted</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -62,8 +62,23 @@
         <input type="date" name="date" required>
 
         <label>
-          <input type="checkbox" name="recurring"> Recurring?
+          <input type="checkbox" name="recurring" id="recurringCheckbox"> Recurring?
         </label>
+        
+        <div id="recurrenceOptions" style="display: none;">
+          <label for="recurrence_type">Frequency</label>
+          <select name="recurrence_type" id="recurrence_type">
+            <option value="weekly">Weekly</option>
+            <option value="biweekly">Biweekly</option>
+            <option value="monthly">Monthly (same day)</option>
+            <option value="custom_days">Custom Days (comma-separated)</option>
+          </select>
+        
+          <div id="customDaysInput" style="display: none;">
+            <label for="custom_days">Days of Month (e.g. 1,15,28)</label>
+            <input type="text" name="custom_days" id="custom_days" placeholder="1,15,28">
+          </div>
+        </div>        
 
         <button type="submit">Save</button>
       </form>

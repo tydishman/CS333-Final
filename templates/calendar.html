@@ -2,57 +2,124 @@
 {% block title %}Monetary Calendar{% endblock %}
 {% block content %}
 
-<!-- templates/calendar.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Calendar View</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-      /* quick styling for calendar layout */
-      .calendar-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-      }
-      .event-list {
-          margin-top: 20px;
-      }
-      .event {
-          border-bottom: 1px solid #ccc;
-          padding: 10px 0;
-      }
-    </style>
-</head>
-<body>
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <form action="{{ url_for('calendar') }}" method="get">
-                <input type="hidden" name="month_offset" value="{{ month_offset - 1 }}">
-                <button type="submit">← Prev</button>
-            </form>
-            <h2>{{ current_month }} {{ current_year }}</h2>
-            <form action="{{ url_for('calendar') }}" method="get">
-                <input type="hidden" name="month_offset" value="{{ month_offset + 1 }}">
-                <button type="submit">Next →</button>
-            </form>
-        </div>
+<div class="calendar-wrapper">
+  <div class="calendar-header">
+    <form action="{{ url_for('calendar') }}" method="get">
+      <input type="hidden" name="month_offset" value="{{ month_offset - 1 }}">
+      <button type="submit">← Prev</button>
+    </form>
+    <h2>{{ current_month }} {{ current_year }}</h2>
+    <form action="{{ url_for('calendar') }}" method="get">
+      <input type="hidden" name="month_offset" value="{{ month_offset + 1 }}">
+      <button type="submit">Next →</button>
+    </form>
+  </div>
 
-        <div class="event-list">
-            {% if events %}
-                {% for event in events %}
-                    <div class="event">
-                        <strong>{{ event.date.strftime('%b %d') }}</strong> — 
-                        {{ event.type.capitalize() }}: ${{ event.amount }} <em>({{ event.description }})</em>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No events for this month.</p>
-            {% endif %}
-        </div>
-    </div>
-</body>
-</html>
+  <div class="calendar-grid">
+    {% for day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}
+      <div class="day-label">{{ day }}</div>
+    {% endfor %}
+
+    {# Empty slots before first day #}
+    {% for _ in range(first_day_of_month.weekday()|int) %}
+      <div class="day-box empty"></div>
+    {% endfor %}
+
+    {# Calendar days #}
+    {% for day in range(1, days_in_month + 1) %}
+      {% set current_date = first_day_of_month.replace(day=day) %}
+      <div class="day-box">
+        <div class="day-number">{{ day }}</div>
+
+        {% for event in events %}
+          {% if event.date == current_date %}
+            <div class="calendar-event">
+              <span class="event-type">{{ event.type.capitalize() }}</span>:
+              ${{ event.amount }}
+              <small>({{ event.description }})</small>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  .calendar-wrapper {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .calendar-header h2 {
+    color: #8b4900;
+    font-size: 1.8rem;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #ccc;
+  }
+
+  .day-label {
+    background-color: #debaa9;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    color: white;
+  }
+
+  .day-box {
+    background: #fff;
+    min-height: 120px;
+    padding: 8px;
+    font-size: 0.9rem;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .empty {
+    background-color: #f6f0e4;
+  }
+
+  .day-number {
+    font-weight: bold;
+    color: #8b4900;
+    margin-bottom: 6px;
+  }
+
+  .calendar-event {
+    background: #f6f0e4;
+    padding: 4px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    color: #8b4900;
+    font-size: 0.85rem;
+  }
+
+  .event-type {
+    font-weight: bold;
+  }
+
+  @media (max-width: 768px) {
+    .calendar-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .day-label {
+      display: none;
+    }
+  }
+</style>
 
 {% endblock %}

@@ -25,21 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLogin = document.getElementById('closeLogin');
   const closeSignup = document.getElementById('closeSignup');
 
-  loginBtn?.addEventListener('click', () => {
-    loginModal.style.display = 'flex';
-  });
-
-  signupBtn?.addEventListener('click', () => {
-    signupModal.style.display = 'flex';
-  });
-
-  closeLogin?.addEventListener('click', () => {
-    loginModal.style.display = 'none';
-  });
-
-  closeSignup?.addEventListener('click', () => {
-    signupModal.style.display = 'none';
-  });
+  loginBtn?.addEventListener('click', () => loginModal.style.display = 'flex');
+  signupBtn?.addEventListener('click', () => signupModal.style.display = 'flex');
+  closeLogin?.addEventListener('click', () => loginModal.style.display = 'none');
+  closeSignup?.addEventListener('click', () => signupModal.style.display = 'none');
 
   // --- FAB Event Modal ---
   const openEventBtn = document.getElementById('openEventModal');
@@ -54,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     eventModal.style.display = 'none';
     eventModal.querySelector('form')?.reset();
     document.getElementById("newCategoryInput").style.display = "none";
+    document.getElementById("recurrenceOptions").style.display = "none";
+    document.getElementById("customDaysInput").style.display = "none";
   });
 
   // --- Category toggle ---
@@ -61,13 +52,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const newCategoryInput = document.getElementById("newCategoryInput");
 
   categorySelect?.addEventListener("change", () => {
-    if (categorySelect.value === "__new__") {
-      newCategoryInput.style.display = "block";
-      newCategoryInput.querySelector("input").required = true;
-    } else {
-      newCategoryInput.style.display = "none";
-      newCategoryInput.querySelector("input").required = false;
-    }
+    const isNew = categorySelect.value === "__new__";
+    newCategoryInput.style.display = isNew ? "block" : "none";
+    newCategoryInput.querySelector("input").required = isNew;
+  });
+
+  // --- Recurring toggle ---
+  const recurringCheckbox = document.getElementById('recurringCheckbox');
+  const recurrenceOptions = document.getElementById('recurrenceOptions');
+  const recurrenceTypeSelect = document.getElementById('recurrence_type');
+  const customDaysInput = document.getElementById('customDaysInput');
+
+  recurringCheckbox?.addEventListener('change', () => {
+    recurrenceOptions.style.display = recurringCheckbox.checked ? 'block' : 'none';
+  });
+
+  recurrenceTypeSelect?.addEventListener('change', () => {
+    customDaysInput.style.display = recurrenceTypeSelect.value === 'custom_days' ? 'block' : 'none';
   });
 
   // --- Flash messages ---
@@ -79,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (cat === 'signup_error') {
       signupModal.style.display = 'flex';
     }
-    alert(msg.textContent); // TODO: replace with toast
+    alert(msg.textContent); // Can be upgraded to toast
   });
 
   // --- Wishlist Modal ---
@@ -87,13 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeWishlistBtn = document.getElementById("closeWishlistModal");
   const wishlistModal = document.getElementById("wishlistModal");
 
-  openWishlistBtn?.addEventListener("click", () => {
-    wishlistModal.style.display = "flex";
-  });
-
-  closeWishlistBtn?.addEventListener("click", () => {
-    wishlistModal.style.display = "none";
-  });
+  openWishlistBtn?.addEventListener("click", () => wishlistModal.style.display = "flex");
+  closeWishlistBtn?.addEventListener("click", () => wishlistModal.style.display = "none");
 
   window.addEventListener("click", (e) => {
     if (e.target === loginModal) loginModal.style.display = 'none';
@@ -101,39 +97,45 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === eventModal) eventModal.style.display = 'none';
     if (e.target === wishlistModal) wishlistModal.style.display = 'none';
   });
-});
 
-function toggleButtonState(form, button) {
-  const requiredFields = form.querySelectorAll("[required]");
-  let allFilled = true;
+  // --- Form Button Enable/Disable ---
+  function toggleButtonState(form, button) {
+    const requiredFields = form.querySelectorAll("[required]");
+    const allFilled = Array.from(requiredFields).every(f => f.value.trim());
+    button.disabled = !allFilled;
+    button.classList.toggle("active-submit", allFilled);
+  }
 
-  requiredFields.forEach(field => {
-    if (!field.value.trim()) {
-      allFilled = false;
+  const loginForm = document.querySelector('#loginModal form');
+  const loginButton = loginForm?.querySelector('button[type="submit"]');
+  loginForm?.addEventListener('input', () => toggleButtonState(loginForm, loginButton));
+  toggleButtonState(loginForm, loginButton);
+
+  const signupForm = document.querySelector('#signupModal form');
+  const signupButton = signupForm?.querySelector('button[type="submit"]');
+  signupForm?.addEventListener('input', () => toggleButtonState(signupForm, signupButton));
+  toggleButtonState(signupForm, signupButton);
+
+  const eventForm = document.getElementById("eventForm");
+
+  eventForm?.addEventListener("submit", async (e) => {
+    e.preventDefault(); // prevent normal form submit
+  
+    const formData = new FormData(eventForm);
+  
+    const response = await fetch(eventForm.action, {
+      method: "POST",
+      body: formData
+    });
+  
+    if (response.ok) {
+      // Close modal and reset
+      document.getElementById("eventModal").style.display = "none";
+      eventForm.reset();
+      document.getElementById("newCategoryInput").style.display = "none";
+      // Optionally show a success toast or flash
+    } else {
+      alert("Error adding event!");
     }
   });
-
-  if (allFilled) {
-    button.disabled = false;
-    button.classList.add("active-submit");
-  } else {
-    button.disabled = true;
-    button.classList.remove("active-submit");
-  }
-}
-
-// Login Form Button Behavior
-const loginForm = document.querySelector('#loginModal form');
-const loginButton = loginForm?.querySelector('button[type="submit"]');
-loginForm?.addEventListener('input', () => {
-  toggleButtonState(loginForm, loginButton);
 });
-toggleButtonState(loginForm, loginButton); // Initial state
-
-// Signup Form Button Behavior
-const signupForm = document.querySelector('#signupModal form');
-const signupButton = signupForm?.querySelector('button[type="submit"]');
-signupForm?.addEventListener('input', () => {
-  toggleButtonState(signupForm, signupButton);
-});
-toggleButtonState(signupForm, signupButton); // Initial state
