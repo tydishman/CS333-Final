@@ -1,3 +1,13 @@
+<<<<<<< Updated upstream
 sqlite3
 google-genai
 bcrypt
+=======
+# sqlite3
+pip install flask
+py -m pip install google.generativeai
+matplotlib
+numpy
+py -m pip install matplotlib
+py -m pip install numpy
+>>>>>>> Stashed changes
