@@ -13,10 +13,14 @@ def login():
         return redirect(url_for(""))
     return render_template("login.html")
 
-@app.route("/<username>")
-def personalView(username):
+@app.route("/main/")
+def personalView():
+    return render_template("dashboard.html")
+
+#@app.route("/<username>/")
+#def personalView(username):
     #heres where we start referencing the database for their personal events and settings \
-    pass
+ #   pass
 
 if __name__ == "__main__":
     app.run(debug=True)
