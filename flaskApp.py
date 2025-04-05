@@ -161,8 +161,8 @@ def logout():
 def personalView():
     if 'user' not in session:
         return redirect(url_for("landing"))
-    graph.generate_graphs()  
-    return render_template("dashboard.html")
+    pie_html, bar_html = graph.generate_graphs() 
+    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
 
 
 @app.route("/add_event/", methods=["POST"])
