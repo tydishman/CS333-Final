@@ -1,1 +1,2 @@
 sqlite3
+pip install -q -U google-genai
