@@ -1,21 +1,64 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 
-from werkzeug.security import check_password_hash  # for comparing hashed passwords
-from db import get_user_by_username  # Replace with actual DB import
+from werkzeug.security import check_password_hash, generate_password_hash
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
+def login_required(view_func):
+    @wraps(view_func)
+    def wrapped_view(*args, **kwargs):
+        if 'user' not in session:
+            flash("Please log in to access this page.", "login_error")
+            return redirect(url_for('landing'))
+        return view_func(*args, **kwargs)
+    return wrapped_view
+
+# Dummy database
+fake_db = {
+    "testuser": {
+        "username": "testuser",
+        "email": "test@example.com",
+        "password_hash": generate_password_hash("password123")
+    }
+}
+
+def get_user_by_username(username):
+    return fake_db.get(username)
+
+def get_user_by_email(email):
+    return fake_db.get(email)
+
+def get_user_by_username_or_email(identifier):
+    for user in fake_db.values():
+        if user["username"] == identifier or user["email"] == identifier:
+            return user
+    return None
+
+def addUser(username, email, password):
+    if username in fake_db or email in fake_db:
+        return False  # Username already exists
+    fake_db[username] = {
+        "username": username,
+        "email": email,
+        "password_hash": generate_password_hash(password)
+    }
+    return True
+
 @app.route("/")
+@login_required
 def landing():
     return render_template("landingPage.html")
 
 #make about available before signing in? or just make a lil about section in welcome page
 @app.route("/about")
+@login_required
 def about():
     return render_template("about.html")
 
 @app.route("/signup/", methods=["POST"])
+@login_required
 def signUp():
     username = request.form.get("username")
     email = request.form.get("email")
@@ -26,72 +69,58 @@ def signUp():
         return redirect(url_for("landing"))
 
     # TODO: Save user to DB
-    print(f"New user: {username}, {email}, {password}")
-
+    fake_db.addUser(username, email, password)
     flash("Sign up successful. You can now log in.", "signup_success")
     return redirect(url_for("landing"))
 
 @app.route("/login/", methods=["POST"])
+@login_required
 def login():
-    if request.method == "POST":
-        # handle login logic here
-        username = request.form['username']
-        password = request.form['password']
-        
-        # Fetch user from database by username
-        user = get_user_by_username(username)
-        
-        if user and check_password_hash(user['password_hash'], password):  # Password matching
-            # User found and password is correct, redirect to the dashboard
-            return redirect(url_for('dashboard'))  # Redirect to 'dashboard' route or user profile
-            
-        else:
-            # Invalid credentials, show flash message
-            flash('Invalid username or password. Please try again.', 'error')
-            return redirect(url_for('login'))  # Stay on the login page
-        return redirect(url_for(""))
-    return render_template("login.html")
+    identifier = request.form.get("username") or request.form.get("email")
+    password = request.form.get("password")
 
-    # TODO: Replace with real authentication
-    if username and password:
-        session['user'] = username
+    user = get_user_by_username_or_email(identifier)
+
+    if user and check_password_hash(user["password_hash"], password):
+        session['user'] = user['username']
         return redirect(url_for("personalView"))
-    else:
-        flash("Invalid username or password", "login_error")
-        return redirect(url_for("landing"))
-    
+
+    flash("Invalid username or password", "login_error")
+    return redirect(url_for("landing"))
+
     #need user before calendar??
 @app.route("/calendar/")
+@login_required
 def calendar():
     return render_template("calendar.html")
 
 @app.route("/tips/")
+@login_required
 def tips():
     return render_template("tips.html")
 
 @app.route("/wishlist/")
+@login_required
 def wishlist():
     return render_template("wishlist.html")
 
 @app.route("/budget/")
+@login_required
 def budget():
     return render_template("budget.html")
 
 @app.route("/logout/")
+@login_required
 def logout():
-    # session.clear()  # Uncomment if using session-based auth
+    session.clear()
     return redirect(url_for("landing"))
 
-@app.route("/main/")
+@app.route("/dashboard/")
+@login_required
 def personalView():
     if 'user' not in session:
         return redirect(url_for("landing"))
     return render_template("dashboard.html")
-
-#@app.route("/<username>/")
-#def personalView(username):
-    #heres where we start referencing the database for their personal events and settings \
- #   pass
 
 if __name__ == "__main__":
     app.run(debug=True)
