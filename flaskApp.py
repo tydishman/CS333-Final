@@ -10,8 +10,23 @@ def landing():
 def login():
     if request.method == "POST":
         # handle login logic here
-        return redirect(url_for(""))
+        return redirect(url_for("personalView"))
     return render_template("login.html")
+
+@app.route("/signup/", methods=["GET", "POST"])
+def signUp():
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # Placeholder: Add user to database here
+        print(f"New user: {username}, {email}, {password}")
+
+        return redirect(url_for("login"))  # Redirect to login after signup
+
+    return render_template("signup.html")
+
 
 @app.route("/main/")
 def personalView():
