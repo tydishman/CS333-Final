@@ -1,5 +1,6 @@
 import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import my_auth
 
 def main():
     user = db.get_user("user@email.com")
@@ -21,58 +22,81 @@ def main():
 
     # print_schema()
 
-# Called by form
-def create_user(username:str, email:str, raw_password:str):
-    password_hash = generate_password_hash(raw_password)
+# Returns boolean depending on whether the transaction was able to be added to the db
+def add_transaction(user, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool) -> bool:
+    flag = None
+    category_id = get_category_id_by_name(user, category_name)
+    if(category_id is None):
+        print("Invalid category name")
+        flag = False
+        return flag
     try:
-        db.create_user(username, email, password_hash)
-        # Successfully added a new user
-        success = True
+        db.create_transaction(user, title, description, category_id, amount, recurring, expense)
+        flag = True
     except:
-        # Failed to add new user. Display this to caller
-        success = False
-    return success
+        flag = False
+    return flag
 
-# Returns 
-def login_user(identifier:str, raw_password:str):    
+def add_category(user, category_name:str) -> bool:
+    flag = None
     try:
-        db_user = db.get_user(identifier)
+        db.create_category(user, category_name)
+        flag = True
     except:
-        return False
-    
-    if not db_user:
-        return False
+        flag = False
+    return flag
 
-    db_hashed_pass = db_user['password_hash']
-    if check_password_hash(db_hashed_pass, raw_password):
-        # Successful hash match, login
-        return True
-    return False
-
-def login_user_from_form(identifier, password):
-    user_flag = login_user(identifier, password)
-    print(user_flag)
-    if(user_flag):
-        user = db.get_user(identifier)
-    else:
-        user = None
-    return user
+# Returns the id of a category (int), or None if the category_name is invalid
+def get_category_id_by_name(user, category_name:str):
+    ret = None
+    try:
+        ret = db.get_category_id_by_name(user, category_name)
+    except:
+        ret = None
+    return ret
 
 if __name__ == "__main__":
-    main()
+    # main()
     flag = input("Create user? y/n")
     if flag.lower() == "y":
         username = input("Username")
         email = input("Email")
         password = input("Pass")
 
-        print(create_user(username, email, password))
+        print(my_auth.create_user(username, email, password))
 
     identifier = input("ID")
     password = input("Password")
 
-    user = login_user_from_form(identifier, password)
+    user = my_auth.login_user_from_form(identifier, password)
     if(user):
         print(user['id'])
     else:
         print("Failed login")
+        exit()
+
+    print("add category? y/n")
+    flag = input()
+    if(flag == "y"):
+        in_name = input("Category name")
+        if(add_category(user, in_name)):
+            print("Category added successfully")
+        else:
+            print("Failed to add category")
+
+    print("Add transaction? y/n")
+    flag = input()
+    if(flag == "y"):
+        category_name:str = input("category_name")
+        title:str = input("title")
+        description:str = input("desc")
+        amount:float = float(input("amount"))
+        recurring_flag:bool = input("recurring?").lower() == "y"
+        expense_flag:bool = input("expense?").lower() == "y"
+
+        if(add_transaction(user, title, description, category_name, amount, recurring_flag, expense_flag)):
+            print("transaction added successfully")
+        else:
+            print("Failed to add transaction")
+    # print(db.get_transactions_of_user(user))
+    [print(f"Title: {x['title']} | Description: {x['description']}") for x in db.get_transactions_of_user(user)]

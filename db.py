@@ -33,7 +33,7 @@ def init_tables():
 
     create_categories_table = """CREATE TABLE IF NOT EXISTS categories (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing category ID
-        name TEXT NOT NULL,                    -- Category name (e.g., "Groceries", "Salary")
+        name TEXT NOT NULL UNIQUE,                    -- Category name (e.g., "Groceries", "Salary")
         user_id INTEGER NOT NULL,              -- Foreign key to `users` table
         FOREIGN KEY(user_id) REFERENCES users(ID) -- Ensures a valid user reference
     );"""
@@ -122,15 +122,21 @@ def create_category(user, category_name:str):
 # Given a user, returns all transactions of a user
 def get_transactions_of_user(user):
     conn = get_db_connection()
-    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (str(user['id'],))).fetchall()
-    conn.close()
-    return transactions
+    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (str(user['id'],)))
+    # conn.close()
+    return transactions.fetchall()
 
 def get_categories_of_user(user):
     conn = get_db_connection()
-    categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (str(user['id'],))).fetchall()
+    categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (str(user['id'],)))
     conn.close()
-    return categories
+    return categories.fetchall()
+
+def get_category_id_by_name(user, category_name:str):
+    conn = get_db_connection()
+    category_id = conn.execute("SELECT c.id FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.name = ?", (str(user['id']), category_name)).fetchone()
+    conn.close()
+    return category_id['id']
 
 if __name__ == "__main__":
     init_tables()
