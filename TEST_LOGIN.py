@@ -25,8 +25,12 @@ def main():
 # Returns boolean depending on whether the transaction was able to be added to the db
 def add_transaction(user, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool) -> bool:
     flag = None
+    category_id = get_category_id_by_name(user, category_name)
+    if(category_id is None):
+        print("Invalid category name")
+        flag = False
+        return flag
     try:
-        category_id = db.get_category_id_by_name(user, category_name)
         db.create_transaction(user, title, description, category_id, amount, recurring, expense)
         flag = True
     except:
@@ -41,6 +45,15 @@ def add_category(user, category_name:str) -> bool:
     except:
         flag = False
     return flag
+
+# Returns the id of a category (int), or None if the category_name is invalid
+def get_category_id_by_name(user, category_name:str):
+    ret = None
+    try:
+        ret = db.get_category_id_by_name(user, category_name)
+    except:
+        ret = None
+    return ret
 
 if __name__ == "__main__":
     # main()
