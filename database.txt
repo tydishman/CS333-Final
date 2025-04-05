@@ -1,0 +1,8 @@
+events: income/expenses
+
+
+
+category - text
+amount - real
+income? - integer (0 or 1)
+recurring expense? - integer (0 or 1)
