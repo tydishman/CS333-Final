@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Landing Page</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 </head>
-<body>
+<body class="landing-body">
 
-    <h1>Welcome!</h1>
-    <h2>Short description of the website</h2>
-    <a href="{{ url_for('login') }}">
-        <button>Log in</button>
-    </a>
-    <a href="{{ url_for('signUp') }}">
-        <button>Register</button>
-    </a>
-      
+  <div class="landing-container">
+    <h1 class="landing-title">Welcome!</h1>
+    <h2 class="landing-subtitle">Easily manage your budget and keep track of spending.</h2>
+
+    <div class="button-group">
+      <a href="{{ url_for('login') }}" class="landing-btn">Log In</a>
+      <a href="{{ url_for('signUp') }}" class="landing-btn alt">Register</a>
+    </div>
+  </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
