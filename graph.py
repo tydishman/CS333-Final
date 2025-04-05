@@ -33,7 +33,7 @@ num_subcategories = 6
 
 # Define base colors
 base_color_outer = (0.87, 0.73, 0.66)  # Pastel brown (#debaa9) - starts light
-base_color_inner = (0.10, 0.35, 0.25)  # Deep pastel green
+base_color_inner = (0.74, 0.86, 0.81)  # Deep pastel green
 
 # Generate gradients
 outer_colors = pastel_gradient(num_main_categories, base_color_outer, alpha_start=0.5, alpha_end=0.85, darken_factor=0.3)  # Darker brown shades
