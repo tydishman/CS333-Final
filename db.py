@@ -107,15 +107,15 @@ def get_user(identifier:str):
     conn.close()
     return user
 
-def create_transaction(user, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool):
+def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool):
     conn = get_db_connection()
-    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user['id'], expense))
+    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user_id, expense))
     conn.commit()
     conn.close()
 
-def create_category(user, category_name:str):
+def create_category(user_id, category_name:str):
     conn = get_db_connection()
-    conn.execute("INSERT INTO categories(name, user_id) VALUES (?, ?)", (category_name, user['id']))
+    conn.execute("INSERT INTO categories(name, user_id) VALUES (?, ?)", (category_name, user_id))
     conn.commit()
     conn.close()
 
@@ -132,9 +132,9 @@ def get_categories_of_user(user):
     conn.close()
     return categories.fetchall()
 
-def get_category_id_by_name(user, category_name:str):
+def get_category_id_by_name(user_id, category_name:str):
     conn = get_db_connection()
-    category_id = conn.execute("SELECT c.id FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.name = ?", (str(user['id']), category_name)).fetchone()
+    category_id = conn.execute("SELECT c.id FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.name = ?", (user_id, category_name)).fetchone()
     conn.close()
     return category_id['id']
 

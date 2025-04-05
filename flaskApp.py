@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 
 import my_auth
+import db_interface
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -8,6 +9,7 @@ from collections import namedtuple
 import matplotlib.pyplot as plt
 import numpy as np
 import graph
+from http import HTTPStatus
 
 # Temporary structure for events
 Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
@@ -18,46 +20,46 @@ app.secret_key = 'supersecretkey'
 def login_required(view_func):
     @wraps(view_func)
     def wrapped_view(*args, **kwargs):
-        if 'user' not in session:
+        if 'user_id' not in session:
             flash("Please log in to access this page.", "login_error")
             return redirect(url_for('landing'))
         return view_func(*args, **kwargs)
     return wrapped_view
 
 # Dummy database
-fake_db = {
-    "testuser": {
-        "username": "testuser",
-        "email": "test@example.com",
-        "password_hash": generate_password_hash("password123")
-    }
-}
+# fake_db = {
+#     "testuser": {
+#         "username": "testuser",
+#         "email": "test@example.com",
+#         "password_hash": generate_password_hash("password123")
+#     }
+# }
 
-def get_user_by_username(username):
-    return fake_db.get(username)
+# def get_user_by_username(username):
+#     return fake_db.get(username)
 
-def get_user_by_email(email):
-    return fake_db.get(email)
+# def get_user_by_email(email):
+#     return fake_db.get(email)
 
-def get_user_by_username_or_email(identifier):
-    for user in fake_db.values():
-        if user["username"] == identifier or user["email"] == identifier:
-            return user
-    return None
+# def get_user_by_username_or_email(identifier):
+#     for user in fake_db.values():
+#         if user["username"] == identifier or user["email"] == identifier:
+#             return user
+#     return None
 
-def addUser(username, email, password):
-    if username in fake_db or email in fake_db:
-        return False  # Username already exists
-    fake_db[username] = {
-        "username": username,
-        "email": email,
-        "password_hash": generate_password_hash(password)
-    }
-    return True
+# def addUser(username, email, password):
+#     if username in fake_db or email in fake_db:
+#         return False  # Username already exists
+#     fake_db[username] = {
+#         "username": username,
+#         "email": email,
+#         "password_hash": generate_password_hash(password)
+#     }
+#     return True
 
 @app.route("/")
 def landing():
-    if 'user' in session:
+    if 'user_id' in session:
         return redirect(url_for("personalView"))
     return render_template("landingPage.html")
 
@@ -95,7 +97,7 @@ def login():
     user = my_auth.login_user_from_form(identifier, password)
 
     if user:
-        session['user'] = user['username']
+        session['user_id'] = user['id']
         return redirect(url_for("personalView"))
 
     flash("Invalid username or password", "login_error")
@@ -159,36 +161,57 @@ def logout():
 @app.route("/dashboard/")
 @login_required
 def personalView():
-    if 'user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for("landing"))
-    graph.generate_graphs()  
+    graph.generate_graphs()
     return render_template("dashboard.html")
 
 
 @app.route("/add_event/", methods=["POST"])
 @login_required
 def add_event():
-    if 'user' not in session:
+    if 'user_id' not in session:
         return redirect(url_for("landing"))
 
     name = request.form.get("name")
+    description = request.form.get("description")
     amount = float(request.form.get("amount"))
     category = request.form.get("category")
-    new_category = request.form.get("new_category")
+    new_category = request.form.get("newCategory")
+
+    final_category = None
+    user_id = session['user_id']
+    if category == "__new__" and new_category:
+        success = db_interface.add_category(user_id, new_category)
+        if success:
+            final_category = new_category
+        else:
+            flash("Failed to add new category", "event_error")
+    else:
+        final_category = category
+
 
     # Use new category if selected
-    final_category = new_category if category == "__new__" and new_category else category
+    # final_category = new_category if category == "__new__" and new_category else category
 
     event_type = request.form.get("type")
+    expense_bool = event_type.lower() == "expense"
+
     date_str = request.form.get("date")
     recurring = 'recurring' in request.form
 
     print(f"[NEW EVENT] {name} | ${amount} | {final_category} | {event_type} | {date_str} | Recurring: {recurring}")
 
     # TODO: Save to DB
+    success = db_interface.add_transaction(user_id, name, description, final_category, amount, recurring, expense_bool)
 
-    flash("Event added successfully!", "event_success")
-    return redirect(url_for("personalView"))
+    if success:
+        flash("Event added successfully!", "event_success")
+        return redirect(url_for("personalView"))
+    else:
+        flash("Failed to add event", "event_error")
+
+    return Response(status=HTTPStatus.NO_CONTENT)
 
 if __name__ == "__main__":
     app.run(debug = True)
