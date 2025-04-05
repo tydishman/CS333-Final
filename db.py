@@ -19,14 +19,14 @@ def init_tables():
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing transaction ID
-        title TEXT NOT NULL,
+        title TEXT,
         description TEXT,
         category_id INTEGER NOT NULL,          -- Foreign key to `categories` table
         amount REAL NOT NULL,                  -- Transaction amount (can be positive or negative)
         recurring BOOLEAN DEFAULT 0,           -- Whether the transaction is recurring (1 = True, 0 = False)
         created_at TEXT DEFAULT (DATETIME('now')), -- Date and time of the transaction
         user_id INTEGER NOT NULL,              -- Foreign key to `users` table
-        type BOOLEAN NOT NULL,                 -- Transaction type (0 = Expense, 1 = Income)
+        expense BOOLEAN NOT NULL,                 -- Transaction type (0 = Expense, 1 = Income)
         FOREIGN KEY(category_id) REFERENCES categories(ID), -- Ensures a valid category reference
         FOREIGN KEY(user_id) REFERENCES users(ID) -- Ensures a valid user reference
     );"""
@@ -44,30 +44,28 @@ def init_tables():
     con.close()
 
 def init_test_data():
-    conn = get_db_connection()
-    cur = conn.cursor()
+    create_user('user', 'user@email.com', 'myhash')
+    user1 = get_user('user')
 
-    cur.execute("INSERT INTO users(username, email, password_hash) VALUES('test','test@email.com','myhash')")    
+    create_category(user1, "Food")
+    create_category(user1, "Entertainment")
 
-    conn.commit()
-    conn.close()
+    create_transaction(user1, 'McDonalds', 'minecraft meal', 1, 12.12, False, True)
+    create_transaction(user1, 'Bluey plushie', 'i really want it', 2, 19.99, True, False)
+    
+
+    create_user('user2', 'user2@email.com', 'secondlyhashedpassword')
+    user2 = get_user('user2')
+    create_transaction(user2, 'waltuh', 'help me', 1, 123.45, False, False)
+
+    create_user('user3', 'user3@email.com', 'hash3')
+    user3 = get_user('user3')
+
 
 def get_db_connection():
     conn = sqlite3.connect(DATABASE_PATH)  # Connect to SQLite database file
     conn.row_factory = sqlite3.Row  # To return rows as dictionaries
     return conn
-
-# def get_user_by_username(username:str):
-#     conn = get_db_connection()
-#     user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
-#     conn.close()
-#     return user
-
-# def get_user_by_email(email:str):
-#     conn = get_db_connection()
-#     user = conn.execute('SELECT * FROM users WHERE email = ?', (email,)).fetchone()
-#     conn.close()
-#     return user
 
 def print_schema():
     new_con = sqlite3.connect(DATABASE_PATH)
@@ -90,8 +88,8 @@ def print_schema():
 
     new_con.close()
 
-# Attempts to add user to database. Throws errors if stuff happens
-def create_user(username:str, email:str, hashed_password:str) -> bool:
+# Attempts to add user to database. Returns the user created
+def create_user(username:str, email:str, hashed_password:str):
     conn = get_db_connection()
     cur = conn.cursor()
 
@@ -101,19 +99,39 @@ def create_user(username:str, email:str, hashed_password:str) -> bool:
 
     conn.commit()
     conn.close()
+    return res
 
 def get_user(identifier:str):
     conn = get_db_connection()
     user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ?', (identifier,identifier)).fetchone()
     conn.close()
-    return user['password_hash']
+    return user
+
+def create_transaction(user, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool):
+    conn = get_db_connection()
+    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user['id'], expense))
+    conn.commit()
+    conn.close()
+
+def create_category(user, category_name:str):
+    conn = get_db_connection()
+    conn.execute("INSERT INTO categories(name, user_id) VALUES (?, ?)", (category_name, user['id']))
+    conn.commit()
+    conn.close()
+
+# Given a user, returns all transactions of a user
+def get_transactions_of_user(user):
+    conn = get_db_connection()
+    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (str(user['id'],))).fetchall()
+    conn.close()
+    return transactions
+
+def get_categories_of_user(user):
+    conn = get_db_connection()
+    categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (str(user['id'],))).fetchall()
+    conn.close()
+    return categories
 
 if __name__ == "__main__":
-    # init_tables()
-    # init_test_data()
-    # create_user("walter", "walter@email.com", "w-8t3h")
-    # user = get_user("walter")
-    user = get_user("walter@email.com")
-    print(user)
-    # print_schema()
-   
+    init_tables()
+    init_test_data()
