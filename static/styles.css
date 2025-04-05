@@ -1,217 +1,238 @@
+/* Base Styles */
 body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Noto Sans';
-    background: #ffffff;
-    color: #8b4900;
-    text-align: center;
-  }
-  
-  .navbar {
-    background-color: #ffffff;
-    padding: 10px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .navbar-brand {
-    font-weight: bold;
-    font-size: 1.2rem;
-  }
-  
-  .sidebar {
-    width: 0;
-    background-color: #f6f0e4;
-    padding: 10px;
-    position: fixed;
-    height: 100%;
-    top: 0;
-    left: 0;
-    overflow-x: hidden;
-    transition: 0.3s;
-    display: none;
-  }
-  
-  .sidebar h2 {
-    color: #debaa9;
-    margin-bottom: 1rem;
-  }
-  
-  .sidebar ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .sidebar ul li {
-    margin: 15px 0;
-  }
-  
-  .sidebar ul li a {
-    color: #debaa9;
-    text-decoration: none;
-    font-weight: bold;
-    transition: 0.2s;
-  }
-  
-  .sidebar ul li a:hover {
-    color: #8b4900;
-    text-decoration: underline;
-  }
-  
-  #main {
-    margin-left: 0;
-    transition: margin-left 0.3s;
-    padding: 20px;
-  }
-  
-  button {
-    background-color: #debaa9;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-    background-color: #8b4900;
-  }  
-  
-  /* Landing Page Styles */
-  body.landing-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Noto Sans';
-    background: #f6f0e4;
-    color:#8b4900;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .landing-container {
-    text-align: center;
-    background-color: #ffffff;
-    padding: 60px 40px;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px #8b4900;
-  }
-  
-  .landing-title {
-    font-size: 3rem;
-    margin-bottom: 10px;
-    color: #8b4900;
-  }
-  
-  .landing-subtitle {
-    font-size: 1.2rem;
-    color: #debaa9;
-    margin-bottom: 40px;
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .landing-btn {
-    text-decoration: none;
-    background-color: #debaa9;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-  }
-  
-  .landing-btn:hover {
-    background-color: #8b4900;
-  }
-  
-  .landing-btn.alt {
-    background-color: #f6f0e4;
-    color: #8b4900;
-  }
-  
-  .landing-btn.alt:hover {
-    background-color: #8b4900;
-  }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .modal-content {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 5px 15px #8b4900;
-    position: relative;
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }  
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans', serif;
+  background: #ffffff;
+  color: #8b4900;
+  text-align: center;
+}
 
-  .fab {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background-color: #8b4900;
-    color: #debaa9;
-    border: none;
-    border-radius: 12px; /* rounded corners */
-    padding: 0 16px; /* horizontal padding for the text */
-    height: 52px;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 3px 3px #8b4900;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap; /* keep text on one line */
-  }
+img {
+  max-width: 100%;
+  height: auto;
+}
 
-.fab:hover {
+/* Navbar */
+.navbar {
+  background-color: #ffffff;
+  padding: 10px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 0;
+  background-color: #f6f0e4;
+  padding: 10px;
+  position: fixed;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  transition: 0.3s;
+  display: none;
+}
+
+.sidebar h2 {
+  color: #debaa9;
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin: 15px 0;
+}
+
+.sidebar ul li a {
+  color: #debaa9;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.sidebar ul li a:hover {
+  color: #8b4900;
+  text-decoration: underline;
+}
+
+#main {
+  margin-left: 0;
+  transition: margin-left 0.3s;
+  padding: 5vw;
+}
+
+/* Buttons */
+button {
   background-color: #debaa9;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #8b4900;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.active-submit {
+  background-color: #8b4900 !important;
+  color: white !important;
+}
+
+/* Landing Page */
+body.landing-body {
+  background: #f6f0e4;
+  color: #8b4900;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 0 5vw;
+}
+
+.landing-container {
+  text-align: center;
+  background-color: #ffffff;
+  padding: 5vh 5vw;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.landing-title {
+  font-size: 3rem;
+  margin-bottom: 10px;
   color: #8b4900;
 }
 
+.landing-subtitle {
+  font-size: 1.2rem;
+  color: #debaa9;
+  margin-bottom: 40px;
+}
+
+.button-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.landing-btn {
+  text-decoration: none;
+  background-color: #debaa9;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.landing-btn:hover {
+  background-color: #8b4900;
+}
+
+.landing-btn.alt {
+  background-color: #f6f0e4;
+  color: #8b4900;
+}
+
+.landing-btn.alt:hover {
+  background-color: #8b4900;
+  color: white;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Floating Action Button */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #debaa9;
+  color: #8b4900;
+  border: none;
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 52px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.fab:hover {
+  background-color: #8b4900;
+  color: #debaa9;
+}
+
+
+/* Fab Modal */
 .fab-modal {
   display: none;
   position: fixed;
-  z-index: 999; /*height over everything else*/
+  z-index: 999;
   left: 0; bottom: 0;
   width: 100%; height: 100%;
-  background-color: #debaa9;
   background: transparent;
   justify-content: flex-start;
   align-items: flex-end;
@@ -220,12 +241,11 @@ body {
 
 .fab-modal-content {
   background-color: #f6f0e4;
-  width: 25%;
-  height: 50%;
-  min-width: 250px;
+  width: 90%;
+  max-width: 400px;
+  height: auto;
   padding: 20px;
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 -1px 4px #8b4900;
   margin: 0 24px 0 auto;
   pointer-events: auto;
 }
@@ -244,21 +264,21 @@ body {
   color: #8b4900;
 }
 
-
+/* Wishlist */
 #wishlist-container {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
+  padding: 0 5vw;
 }
 
 .wishlist-item {
   background-color: #f6f0e4;
   padding: 12px 20px;
   border-radius: 12px;
-  box-shadow: 0 2px 4px #debaa9;
-  width: 80%;
+  width: 100%;
   max-width: 400px;
   display: flex;
   justify-content: space-between;
@@ -266,22 +286,54 @@ body {
   color: #8b4900;
 }
 
-.item-name {
-  font-size: 1.1rem;
-}
-
+.item-name,
 .item-price {
   font-size: 1.1rem;
 }
 
-/* Default disabled look */
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .landing-title {
+    font-size: 2.5rem;
+  }
+
+  .landing-subtitle {
+    font-size: 1rem;
+  }
+
+  .fab-modal-content {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+  }
 }
 
-/* Activated state for submit buttons */
-.active-submit {
-  background-color: #8b4900 !important;
-  color: white !important;
+@media (max-width: 480px) {
+  .landing-title {
+    font-size: 2rem;
+  }
+
+  .landing-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .landing-container {
+    padding: 6vh 4vw;
+  }
+
+  .modal-content {
+    padding: 1.5rem;
+  }
+
+  .fab {
+    bottom: 16px;
+    right: 16px;
+    height: 48px;
+    font-size: 16px;
+    padding: 0 12px;
+  }
 }
