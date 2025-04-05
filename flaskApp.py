@@ -6,12 +6,10 @@ app = Flask(__name__)
 def landing():
     return render_template("landingPage.html")
 
-@app.route("/login/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        # handle login logic here
-        return redirect(url_for("personalView"))
-    return render_template("login.html")
+#make about available before signing in? or just make a lil about section in welcome page
+@app.route("/about")
+def about():
+    return render_template("about.html")
 
 @app.route("/signup/", methods=["GET", "POST"])
 def signUp():
@@ -23,10 +21,38 @@ def signUp():
         # Placeholder: Add user to database here
         print(f"New user: {username}, {email}, {password}")
 
-        return redirect(url_for("login"))  # Redirect to login after signup
+        return redirect(url_for("login"))
 
     return render_template("signup.html")
 
+@app.route("/login/", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        # handle login logic here
+        return redirect(url_for("personalView"))
+    return render_template("login.html")
+
+#need user before calendar??
+@app.route("/calendar/")
+def calendar():
+    return render_template("calendar.html")
+
+@app.route("/tips/")
+def tips():
+    return render_template("tips.html")
+
+@app.route("/wishlist/")
+def wishlist():
+    return render_template("wishlist.html")
+
+@app.route("/budget/")
+def budget():
+    return render_template("budget.html")
+
+@app.route("/logout/")
+def logout():
+    # session.clear()  # Uncomment if using session-based auth
+    return redirect(url_for("landing"))
 
 @app.route("/main/")
 def personalView():

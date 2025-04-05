@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Simple Sidebar Page</title>
+  <title></title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -17,12 +17,13 @@
   <div id="mySidebar" class="sidebar">
     <button onclick="w3_close()">☰</button>
     <ul>
-      <li><a href="#">Dashboard</a></li>
-      <li><a href="#">Calendar</a></li>
-      <li><a href="#">Wishlist</a></li>
-      <li><a href="#">Tips</a></li>
-      <li><a href="#">Budget</a></li>
-      <li><a href="#">Logout</a></li>
+      <li><a href="{{ url_for('personalView') }}">Dashboard</a></li>
+      <li><a href="{{ url_for('calendar') }}">Calendar</a></li>
+      <li><a href="{{ url_for('wishlist') }}">Wishlist</a></li>
+      <li><a href="{{ url_for('tips') }}">Tips</a></li>
+      <li><a href="{{ url_for('budget') }}">Budget</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      
     </ul>
   </div>
 
