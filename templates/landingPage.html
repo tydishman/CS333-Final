@@ -3,9 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Landing Page</title>
+  <title>Rooted</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+  body.landing-body {
+    background-image: url("{{ url_for('static', filename='images/landing.jpg') }}");
+    background-size: cover;             /* Ensures the image covers the whole screen */
+    background-repeat: no-repeat;       /* Prevents tiling */
+    background-position: center center; /* Keeps it centered */
+    background-attachment: fixed;       /* Optional: creates a parallax effect */
+    min-height: 100vh;                  /* Ensures full height */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  </style>
 </head>
+
 <body class="landing-body">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -18,8 +35,8 @@
   {% endwith %}
 
   <div class="landing-container">
-    <h1 class="landing-title">Welcome!</h1>
-    <h2 class="landing-subtitle">Easily manage your budget and keep track of spending.</h2>
+    <h1 class="landing-title">Welcome to Rooted!</h1>
+    <h2 class="landing-subtitle">Plant your roots in healthy spending habits</h2>
 
     <div class="button-group">
       <button class="landing-btn" id="openLogin">Log In</button>

@@ -226,7 +226,6 @@ body.landing-body {
   color: #debaa9;
 }
 
-
 /* Fab Modal */
 .fab-modal {
   display: none;
@@ -361,4 +360,15 @@ body.landing-body {
 .event-item {
   padding: 0.5rem 0;
   border-bottom: 1px solid #eee;
+}
+.calendar-event.income {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.calendar-event.expense {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #dc3545;
 }

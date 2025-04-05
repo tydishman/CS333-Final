@@ -160,10 +160,51 @@ def add_wishlist_item():
         wishlist_items.append({'name': name, 'price': price})
     return redirect(url_for('wishlist'))
 
-@app.route("/budget/")
+@app.route('/budget/', methods=['GET', 'POST'])
 @login_required
 def budget():
-    return render_template("budget.html")
+    #user_id = current_user.id 
+    #if request.method == 'POST':
+    #    allocations = request.form.to_dict()
+    #    for category, percent in allocations.items():
+    #        # Save or update each allocation (you’ll need a Budget table)
+    #        existing = Budget.query.filter_by(user_id=user_id, category=category).first()
+    ##        if existing:
+     #           existing.percentage = float(percent)
+      #      else:
+       #         db.session.add(Budget(user_id=user_id, category=category, percentage=float(percent)))
+        #db.session.commit()
+        #flash("Budget updated!", "success")
+        #return redirect(url_for('budget'))
+
+    #current_allocations = Budget.query.filter_by(user_id=user_id).all()
+    #return render_template('budget.html', allocations=current_allocations)
+
+    # Simulate session-based user
+    dummy_user_id = 1
+
+    # Static in-memory "database" — gets reset on app restart
+    if 'dummy_budgets' not in session:
+        session['dummy_budgets'] = {
+            'Rent': 30.0,
+            'Groceries': 20.0,
+            'Savings': 15.0,
+            'Utilities': 10.0,
+            'Entertainment': 15.0,
+            'Other': 10.0
+        }
+
+    if request.method == 'POST':
+        allocations = request.form.to_dict()
+        session['dummy_budgets'] = {
+            k: float(v) for k, v in allocations.items()
+        }
+        flash("Budget updated! (dummy)", "success")
+        return redirect(url_for('budget'))
+
+    allocations = session['dummy_budgets']
+    return render_template('budget.html', allocations=allocations)
+
 
 @app.route("/logout/")
 @login_required
