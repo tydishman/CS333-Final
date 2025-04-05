@@ -21,7 +21,7 @@
     {% endfor %}
 
     {# Empty slots before first day #}
-    {% for _ in range(first_day_of_month.weekday()|int) %}
+    {% for _ in range(first_day_of_month.weekday()|int+1) %}
       <div class="day-box empty"></div>
     {% endfor %}
 
