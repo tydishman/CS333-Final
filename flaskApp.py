@@ -206,7 +206,7 @@ def personalView():
     transaction_list = db.get_transactions_of_user(session['user_id'])
     events = db_interface.find_events(session['user_id'])  # This contains recent events
     total_budget = db.get_user_budget(session['user_id'])
-    pie_html, bar_html = graph.generate_graphs(transaction_list, None, total_budget)
+    pie_html, bar_html = graph.generate_graphs(transaction_list, total_budget)
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html, recent_events=events)
 
 @app.route("/add_event/", methods=["POST"])
