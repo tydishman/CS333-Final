@@ -105,23 +105,35 @@ def print_schema():
 
     new_con.close()
 
-# Attempts to add user to database. Returns the user created
-def create_user(username:str, email:str, hashed_password:str):
+def create_user(username: str, email: str, hashed_password: str):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    res = cur.execute("INSERT INTO users (username, email, password_hash) VALUES(?,?,?)", (username,email,hashed_password))    
+    try:
+        cur.execute(
+            "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+            (username, email, hashed_password)
+        )
+        conn.commit()
+        user_id = cur.lastrowid  # Get the ID of the newly inserted user
 
-    # sqlite3.IntegrityError: UNIQUE constraint failed: users.email
+        # Optional: Fetch and return full user
+        cur.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        user = cur.fetchone()
 
-    conn.commit()
-    conn.close()
+        return dict(user) if user else None
 
-    return res
+    except sqlite3.IntegrityError as e:
+        print(f"IntegrityError: {e}")  # Email or username probably already exists
+        return None
+
+    finally:
+        conn.close()
+
 
 def get_user(identifier:str):
     conn = get_db_connection()
-    user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ?', (identifier,identifier)).fetchone()
+    user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ? OR ID = ?', (identifier,identifier,identifier)).fetchone()
     conn.close()
     return user
 
@@ -138,6 +150,7 @@ def create_category(user_id, category_name:str):
     conn.execute("INSERT INTO categories(name, user_id) VALUES (?, ?)", (category_name, user_id))
     conn.commit()
     conn.close()
+    return True
 
 # Given a user, returns all transactions of a user
 def get_transactions_of_user(user_id):
