@@ -149,7 +149,7 @@ def get_transactions_of_user(user_id):
 def get_categories_of_user(user_id):
     conn = get_db_connection()
     categories = conn.execute("SELECT * FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ?", (user_id,))
-    conn.close()
+    # conn.close()
     return categories.fetchall()
 
 def get_category_id_by_name(user_id, category_name:str):

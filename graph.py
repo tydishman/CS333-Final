@@ -10,7 +10,7 @@ def pastel_gradient(n, base_color, alpha_start=0.5, alpha_end=0.9, darken_factor
         shades.append('rgba({}, {}, {}, {})'.format(*(int(c * 255) for c in darkened_color), alpha))
     return shades
 
-def generate_graphs(transaction_list, category_translations, total_budget):
+def generate_graphs(transaction_list, total_budget):
     # Define spending categories and values
     # categories = ["Housing", "Food", "Entertainment"]
     # subcategories = [["Rent", "Utilities"], ["Groceries", "Dining Out"], ["Movies", "Games"]]
