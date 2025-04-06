@@ -179,9 +179,9 @@ def personalView():
         return redirect(url_for("landing"))
     
     transaction_list = db.get_transactions_of_user(session['user_id'])
-
-    pie_html, bar_html = graph.generate_graphs(transaction_list, None, 5000.00) 
-    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
+    events = db_interface.find_events(session['user_id'])  # This contains recent events
+    pie_html, bar_html = graph.generate_graphs(transaction_list, None, 5000.00)
+    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html, recent_events=events)
 
 @app.route("/add_event/", methods=["POST"])
 def add_event():

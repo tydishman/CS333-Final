@@ -38,6 +38,7 @@ def find_events(user_id):
             "amount": transaction["amount"],
             "type": "expense" if transaction["expense"] else "income",
             "name": transaction["title"],
+            "description": transaction["description"]
         })
     return events
 

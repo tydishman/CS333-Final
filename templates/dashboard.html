@@ -9,21 +9,23 @@
     <h2 class="section-title">Recent Events</h2>
     {% if recent_events %}
       <ul class="event-list">
-        {% for event in recent_events %}
+        {% for event in recent_events[:6] %}
           <li class="event-item">
-            <strong>{{ event.title }}</strong><br>
-            <small>{{ event.date.strftime("%b %d, %Y") }}</small>
+            <div class="event-details">
+              <strong class="event-title">{{ event.name }}</strong><br>
+              <small class="event-date">{{ event.date.strftime("%b %d, %Y") }}</small>
+              <p class="event-description">{{ event.description }}</p>
+              <span class="event-amount">${{ event.amount }}</span>
+              <span class="event-description">: {{ event.type }}</span>
+            </div>
           </li>
         {% endfor %}
       </ul>
     {% else %}
       <p>No recent events.</p>
     {% endif %}
-  </div>
-  
+</div>
+
 <div>{{ bar_html|safe }}</div>
 
-
-
 {% endblock %}
-

@@ -347,3 +347,66 @@ body.landing-body {
   color: #721c24;
   border-left: 4px solid #dc3545;
 }
+
+.recent-events-card {
+  background-color: #fcf2ea; /* Lightened background for a fresher vibe */
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.section-title {
+  font-size: 1.9rem;
+  color: #9b4d00; /* Slightly darker tone for better contrast */
+  margin-bottom: 20px;
+  font-family: 'Noto Sans', serif;
+}
+
+.event-list {
+  list-style: none;
+  padding: 0;
+}
+
+.event-item {
+  background-color: #ffffff;
+  border: 1px solid #7c6a54; /* Light border color for a softer look */
+  border-radius: 10px;
+  margin-bottom: 12px;
+  padding: 15px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-item:hover {
+  transform: translateY(-5px); /* Hover effect for interactivity */
+}
+
+.event-details {
+  font-family: 'Noto sans', serif;
+  color: #5a4d3e; /* A neutral, calming tone for text */
+}
+
+.event-title {
+  font-size: 1.3rem;
+  color: #9b4d00; /* A more vibrant, eye-catching shade */
+  font-weight: bold;
+}
+
+.event-date {
+  font-size: 1rem;
+  color: #d4b98b; /* Lighter beige for the date */
+}
+
+.event-description {
+  font-size: 1rem;
+  color: #9b4d00; /* Same warm, earthy color for consistency */
+}
+
+.event-amount {
+  font-size: 1rem;
+  color: #8b4900; /* Adding a cool tone for the amount */
+  font-weight: bold;
+}
+
+.event-type {
+  font-size: 0.9rem;
+  color: #8e6332; /* A soft gray for the event type (expense/income) */
+}
