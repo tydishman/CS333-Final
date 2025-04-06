@@ -138,7 +138,7 @@ def tips():
         category_dict[category_id] = []
 
     for transaction in transactions:
-        category_id = str(transaction['category_id'])
+        category_id = int(transaction['category_id'])
 
         try:
             category_dict[category_id].append(transaction)
@@ -153,31 +153,36 @@ def tips():
             translation_dict[category_name] = category_id
 
     print(translation_dict)
+    print(category_dict)
+
+    # for x in category_dict.values():
+    #     if x:
+    #         print(x[0]['title'], x[0]['amount'])
+    
 
     def sum_expenses(category_name):
         expenses_transactions = category_dict[translation_dict[category_name]]
         expenses = 0.0
         for x in expenses_transactions:
-            value = float(transaction['amount'])
-            if(bool(transaction['expense'])):
+            value = float(x['amount'])
+            print(x['title'], value)
+            if(bool(x['expense'])):
                 expenses += value
             else:
                 expenses -= value
         return expenses
+    
     user_income = -1 * sum_expenses('paycheck')
     user_rent = sum_expenses('rent')
     user_food = sum_expenses('groceries')
     user_spending = sum_expenses('spending')
     user_savings = sum_expenses('savings')
 
-    print(user_income, user_rent, user_food, user_spending, user_savings)
 
-    spending_analysis = suggestions.analyze_spending(user_income, user_rent, user_food, user_spending, user_savings)
     budget_tips = suggestions.get_budget_tips(user_income, user_rent, user_food, user_spending, user_savings)
     
-    print(budget_tips)
 
-    return render_template("tips.html",spending_analysis=spending_analysis, budget_tips=budget_tips)
+    return render_template("tips.html", budget_tips=budget_tips)
 
 @app.route('/budget/', methods=['GET', 'POST'])
 def budget():
