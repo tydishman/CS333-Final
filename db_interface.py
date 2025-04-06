@@ -2,7 +2,7 @@ import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 import my_auth
-from datetime import date
+from datetime import datetime
 
 def main():
     user = db.get_user("user@email.com")
@@ -21,24 +21,26 @@ def main():
     categories = db.get_categories_of_user(user)
     [print(category['name']) for category in categories]
 
-def get_user(identifier:str):
-    conn = db.get_db_connection()
-    user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ? OR id = ?', (identifier,identifier,identifier)).fetchone()
-    conn.close()
-    return user
+
+    # print_schema()
+
+from datetime import datetime
 
 def find_events(user_id):
     events = []
     transactions = db.get_transactions_of_user(user_id)
     for transaction in transactions:
+        # Convert date string to datetime object
+        event_date = datetime.strptime(transaction["created_at"], "%Y-%m-%d")
+        
         events.append({
-            "date": transaction["date"],
+            "date": event_date,  # Store the date as a datetime object
             "amount": transaction["amount"],
             "type": "expense" if transaction["expense"] else "income",
             "name": transaction["title"],
         })
-    print("Extracted Events:", events)
     return events
+
 
 # Returns boolean depending on whether the transaction was able to be added to the db
 def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, input_date) -> bool:
@@ -67,19 +69,12 @@ def add_category(user_id, category_name:str) -> bool:
 
 # Returns the id of a category (int), or None if the category_name is invalid
 def get_category_id_by_name(user_id, category_name:str):
-    category_name = category_name.lower()
     ret = None
     try:
         ret = db.get_category_id_by_name(user_id, category_name)
     except:
         ret = None
     return ret
-
-def get_transactions_of_user(user_id):
-    conn = db.get_db_connection()
-    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (user_id,))
-    # conn.close()
-    return transactions.fetchall()
 
 if __name__ == "__main__":
     # main()
@@ -113,7 +108,7 @@ if __name__ == "__main__":
     print("Add transaction? y/n")
     flag = input()
     if(flag == "y"):
-        category_name:str = input("category_name").lower()
+        category_name:str = input("category_name")
         title:str = input("title")
         description:str = input("desc")
         amount:float = float(input("amount"))

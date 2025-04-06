@@ -266,33 +266,6 @@ body.landing-body {
   color: #8b4900;
 }
 
-/* Wishlist */
-#wishlist-container {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-  padding: 0 5vw;
-}
-
-.wishlist-item {
-  background-color: #f6f0e4;
-  padding: 12px 20px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-  color: #8b4900;
-}
-
-.item-name,
-.item-price {
-  font-size: 1.1rem;
-}
-
 /* Media Queries for Responsiveness */
 @media (max-width: 768px) {
   .landing-title {
