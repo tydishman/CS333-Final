@@ -32,9 +32,9 @@
         <div class="day-number">{{ day }}</div>
 
         {% for event in events %}
-        {% if event.date == current_date %}
-          <div class="calendar-event {{ event.type }}">
-            <span class="event-type">{{ event.type.capitalize() }}</span>:
+          {% if event.date.year == current_date.year and event.date.month == current_date.month and event.date.day == current_date.day %}
+            <div class="calendar-event {{ event.type }}">
+              <span class="event-type">{{ event.type.capitalize() }}</span>:
               ${{ event.amount }}
               <small>({{ event.name }})</small>
             </div>

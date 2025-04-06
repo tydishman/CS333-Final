@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date
+
 
 DATABASE_PATH = "database.db"
 
@@ -19,12 +19,11 @@ def init_tables():
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing transaction ID
-        title TEXT,
+        title TEXT NOT NULL,
         description TEXT,
         category_id INTEGER NOT NULL,          -- Foreign key to `categories` table
         amount REAL NOT NULL,                  -- Transaction amount (can be positive or negative)
         recurring BOOLEAN DEFAULT 0,           -- Whether the transaction is recurring (1 = True, 0 = False)
-        date TEXT NOT NULL,
         created_at TEXT DEFAULT (DATETIME('now')), -- Date and time of the transaction
         user_id INTEGER NOT NULL,              -- Foreign key to `users` table
         expense BOOLEAN NOT NULL,                 -- Transaction type (0 = Expense, 1 = Income)
@@ -108,10 +107,10 @@ def get_user(identifier:str):
     conn.close()
     return user
 
-def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, date:date, recurring:bool, expense:bool):
+def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool, input_date):
     title = title.lower()
     conn = get_db_connection()
-    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, date, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, date, user_id, expense))
+    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user_id, expense, input_date))
     conn.commit()
     conn.close()
 

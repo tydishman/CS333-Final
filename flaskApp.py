@@ -13,15 +13,6 @@ from http import HTTPStatus
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-def login_required(view_func):
-    @wraps(view_func)
-    def wrapped_view(*args, **kwargs):
-        if 'user_id' not in session:
-            flash("Please log in to access this page.", "login_error")
-            return redirect(url_for('landing'))
-        return view_func(*args, **kwargs)
-    return wrapped_view
-
 # Dummy database
 # fake_db = {
 #     "testuser": {
@@ -90,15 +81,13 @@ def login():
     flash("Invalid username or password", "login_error")
     return redirect(url_for("landing"))
 
-    #need user before calendar??
-
-
 # Temporary structure for events
 Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
 
 @app.route("/calendar/")
-@login_required
 def calendar():
+    if 'user_id' not in session:
+        return redirect(url_for("landing"))
     user_id = session['user_id']
     month_offset = int(request.args.get('month_offset', 0))
     today = datetime.today()
@@ -125,28 +114,12 @@ def calendar():
     )
 
 @app.route("/tips/")
-@login_required
 def tips():
+    if 'user_id' not in session:
+        return redirect(url_for("landing"))
     return render_template("tips.html")
 
-wishlist_items = []  # in-memory list for now
-
-@app.route('/wishlist')
-@login_required
-def wishlist():
-    return render_template('wishlist.html', items=wishlist_items)
-
-@app.route('/add-wishlist-item/', methods=['POST'])
-@login_required
-def add_wishlist_item():
-    name = request.form.get('item_name')
-    price = request.form.get('item_price')
-    if name and price:
-        wishlist_items.append({'name': name, 'price': price})
-    return redirect(url_for('wishlist'))
-
 @app.route('/budget/', methods=['GET', 'POST'])
-@login_required
 def budget():
     #user_id = current_user.id 
     #if request.method == 'POST':
@@ -192,13 +165,13 @@ def budget():
 
 
 @app.route("/logout/")
-@login_required
 def logout():
+    if 'user_id' not in session:
+        return redirect(url_for("landing"))
     session.clear()
     return redirect(url_for("landing"))
 
 @app.route("/dashboard/")
-@login_required
 def personalView():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
@@ -207,7 +180,6 @@ def personalView():
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
 
 @app.route("/add_event/", methods=["POST"])
-@login_required
 def add_event():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
