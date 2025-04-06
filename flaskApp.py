@@ -152,6 +152,8 @@ def tips():
             category_name = db.get_category_name_by_id(transaction['user_id'], category_id)
             translation_dict[category_name] = category_id
 
+    print(translation_dict)
+
     def sum_expenses(category_name):
         expenses_transactions = category_dict[translation_dict[category_name]]
         expenses = 0.0
@@ -162,7 +164,7 @@ def tips():
             else:
                 expenses -= value
         return expenses
-    user_income = sum_expenses('paycheck')
+    user_income = -1 * sum_expenses('paycheck')
     user_rent = sum_expenses('rent')
     user_food = sum_expenses('groceries')
     user_spending = sum_expenses('spending')
@@ -203,11 +205,12 @@ def personalView():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
     
+    username = session['username']
     transaction_list = db.get_transactions_of_user(session['user_id'])
     events = db_interface.find_events(session['user_id'])  # This contains recent events
     total_budget = db.get_user_budget(session['user_id'])
     pie_html, bar_html = graph.generate_graphs(transaction_list, total_budget)
-    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html, recent_events=events)
+    return render_template("dashboard.html", username=username, pie_html=pie_html, bar_html=bar_html, recent_events=events)
 
 @app.route("/add_event/", methods=["POST"])
 def add_event():

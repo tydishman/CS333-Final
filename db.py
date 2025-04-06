@@ -184,4 +184,4 @@ def get_user_budget(user_id):
 
 if __name__ == "__main__":
     init_tables()
-    #init_test_data()
+    # init_test_data()
