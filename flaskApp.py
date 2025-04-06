@@ -3,6 +3,7 @@ import my_auth
 import db_interface
 import db
 import suggestions
+import markdown
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -116,6 +117,10 @@ def calendar():
         days_in_month=days_in_month,
         events=events
     )
+
+@app.template_filter('markdown')
+def markdown_filter(text):
+    return markdown.markdown(text, extensions=['nl2br'])
 
 @app.route("/tips/")
 def tips():

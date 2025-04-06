@@ -3,7 +3,7 @@
 {% block content %}
 
 <div id="main" class="content">
-    <h1>${{ budget_tips }}</h1>
+    <h1><p>{{ budget_tips | markdown | safe }}</p></h1>
 </div>
 
 {% endblock %}
