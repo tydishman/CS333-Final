@@ -77,13 +77,12 @@ def generate_graphs(transaction_list, category_translations, total_budget):
     in_labels = list(translation_dict.values())
     for i in range(len(in_labels)):
         in_labels[i] = in_labels[i].capitalize()
-    print(in_labels)
 
     # May need to rework the alignment on the two graphs
     fig_pie = go.Figure()
     fig_pie.add_trace(go.Pie(labels=in_labels, values=main_category_values, hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='outside'))
-    fig_pie.add_trace(go.Pie(labels=subcategories, values=subcategory_values, hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
+    fig_pie.add_trace(go.Pie(labels=[x.capitalize() for x in subcategories], values=subcategory_values, hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='inside', insidetextorientation='horizontal'))
 
     fig_pie.update_layout(

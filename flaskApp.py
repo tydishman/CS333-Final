@@ -254,7 +254,6 @@ def add_event():
     else:
         flash("Failed to add event", "event_error")
 
-    # return Response(status=HTTPStatus.NO_CONTENT)
     recurrence_type = request.form.get("recurrence_type")
     custom_days = request.form.get("custom_days", "")
 
