@@ -148,4 +148,4 @@ def get_category_name_by_id(user_id, category_id:str):
 
 if __name__ == "__main__":
     init_tables()
-    init_test_data()
+    # init_test_data()
