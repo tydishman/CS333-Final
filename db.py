@@ -19,7 +19,7 @@ def init_tables():
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing transaction ID
-        title TEXT,
+        title TEXT NOT NULL,
         description TEXT,
         category_id INTEGER NOT NULL,          -- Foreign key to `categories` table
         amount REAL NOT NULL,                  -- Transaction amount (can be positive or negative)

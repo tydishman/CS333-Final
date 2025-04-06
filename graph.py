@@ -9,20 +9,43 @@ def pastel_gradient(n, base_color, alpha_start=0.5, alpha_end=0.9, darken_factor
         shades.append('rgba({}, {}, {}, {})'.format(*(int(c * 255) for c in darkened_color), alpha))
     return shades
 
-def generate_graphs():
+def generate_graphs(transaction_list, category_translations, total_budget):
     # Define spending categories and values
-    categories = ["Housing", "Food", "Entertainment"]
-    subcategories = [["Rent", "Utilities"], ["Groceries", "Dining Out"], ["Movies", "Games"]]
-    vals = np.array([[50., 340], [40., 50.], [45., 70.]])  # Sub-category spending
+    # categories = ["Housing", "Food", "Entertainment"]
+    # subcategories = [["Rent", "Utilities"], ["Groceries", "Dining Out"], ["Movies", "Games"]]
+    # vals = np.array([[50., 340], [40., 50.], [45., 70.]])  # Sub-category spending
+
+    total_spent = 0.0
+    category_dict = {}
+    subcategories = []
+    num_main_categories = 0
+    num_subcategories = 0
+    
+    # Initialize category dictionary
+    for transaction in transaction_list:
+        category_id = str(transaction['category_id'])
+
+        try:
+            category_dict[category_id].append(transaction)
+        except KeyError:
+            category_dict[category_id] = [transaction]
+            num_main_categories += 1
+
+        if transaction['title'] not in subcategories:
+            subcategories.append(transaction['title'])
+            num_subcategories += 1
+
+        value = float(transaction['value'])
+        if(bool(transaction['expense'])):
+            total_spent += value
+        else:
+            total_spent -= value        # check this logic i have no idea
+    
+        
+
 
     # Define total budget
-    total_budget = 4000  # Example total monthly budget
-    total_spent = vals.sum()  # Sum of all spending
     remaining = total_budget - total_spent  # Money left or over budget
-
-    # Define number of categories
-    num_main_categories = len(categories)
-    num_subcategories = len(np.concatenate(subcategories))
 
     # Define base colors
     base_color_outer = (0.87, 0.73, 0.66)  # Pastel brown (#debaa9) - starts light
@@ -34,9 +57,9 @@ def generate_graphs():
 
     # Create pie chart for spending breakdown
     fig_pie = go.Figure()
-    fig_pie.add_trace(go.Pie(labels=categories, values=vals.sum(axis=1), hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
+    fig_pie.add_trace(go.Pie(labels=category_dict.keys(), values=vals.sum(axis=1), hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='outside'))
-    fig_pie.add_trace(go.Pie(labels=np.concatenate(subcategories), values=vals.flatten(), hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
+    fig_pie.add_trace(go.Pie(labels=subcategories, values=vals.flatten(), hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='inside', insidetextorientation='horizontal'))
 
     fig_pie.update_layout(
@@ -69,4 +92,9 @@ def generate_graphs():
     pie_html = fig_pie.to_html(full_html=False)
     bar_html = fig_bar.to_html(full_html=False)
 
+    fig_pie.show()
+
     return pie_html, bar_html
+
+if __name__ == "__main__":
+    generate_graphs()
