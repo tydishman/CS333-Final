@@ -7,7 +7,7 @@ DEFAULT_CATEGORIES = ["rent", "groceries", "spending", "paycheck", "savings"]
 def create_user(username:str, email:str, raw_password:str):
     password_hash = generate_password_hash(raw_password)
     try:
-        db.create_user(username, email, password_hash)
+        db.db_create_user(username, email, password_hash)
         user_id = db.get_user(username)['id']
         init_default_categories(user_id, DEFAULT_CATEGORIES)
         # Successfully added a new user

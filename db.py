@@ -33,35 +33,21 @@ def init_tables():
     );"""
 
     create_categories_table = """CREATE TABLE IF NOT EXISTS categories (
-        ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing category ID
-        name TEXT NOT NULL UNIQUE,                    -- Category name (e.g., "Groceries", "Salary")
-        user_id INTEGER NOT NULL,              -- Foreign key to `users` table
-        FOREIGN KEY(user_id) REFERENCES users(ID) -- Ensures a valid user reference
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY(user_id) REFERENCES users(ID),
+        UNIQUE(user_id, name)  -- ✅ Each user can have a category with the same name
     );"""
+
 
     cur.execute(create_users_table)
     cur.execute(create_transactions_table)
     cur.execute(create_categories_table)
     con.close()
 
-
-def add_budget_column():
-    conn = sqlite3.connect(DATABASE_PATH)
-    cursor = conn.cursor()
-
-    # Check the columns in the 'users' table
-    cursor.execute("PRAGMA table_info(users);")
-    columns = [column['name'] for column in cursor.fetchall()]
-
-    # If the 'budget' column doesn't exist, add it
-    if 'budget' not in columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN budget FLOAT NOT NULL DEFAULT 0.0;")
-        conn.commit()
-
-    conn.close()
-
 def init_test_data():
-    create_user('user', 'user@email.com', 'myhash')
+    db_create_user('user', 'user@email.com', 'myhash')
     user1 = get_user('user')
 
     create_category(user1, "Food")
@@ -71,11 +57,11 @@ def init_test_data():
     create_transaction(user1, 'Bluey plushie', 'i really want it', 2, 19.99, True, False)
     
 
-    create_user('user2', 'user2@email.com', 'secondlyhashedpassword')
+    db_create_user('user2', 'user2@email.com', 'secondlyhashedpassword')
     user2 = get_user('user2')
     create_transaction(user2, 'waltuh', 'help me', 1, 123.45, False, False)
 
-    create_user('user3', 'user3@email.com', 'hash3')
+    db_create_user('user3', 'user3@email.com', 'hash3')
     user3 = get_user('user3')
 
 
@@ -105,30 +91,18 @@ def print_schema():
 
     new_con.close()
 
-def create_user(username: str, email: str, hashed_password: str):
+def db_create_user(username: str, email: str, hashed_password: str):
     conn = get_db_connection()
     cur = conn.cursor()
 
-    try:
-        cur.execute(
-            "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
-            (username, email, hashed_password)
-        )
-        conn.commit()
-        user_id = cur.lastrowid  # Get the ID of the newly inserted user
+    res = cur.execute("INSERT INTO users (username, email, password_hash) VALUES(?,?,?)", (username,email,hashed_password))    
 
-        # Optional: Fetch and return full user
-        cur.execute("SELECT * FROM users WHERE id = ?", (user_id,))
-        user = cur.fetchone()
+    # sqlite3.IntegrityError: UNIQUE constraint failed: users.email
 
-        return dict(user) if user else None
+    conn.commit()
+    conn.close()
 
-    except sqlite3.IntegrityError as e:
-        print(f"IntegrityError: {e}")  # Email or username probably already exists
-        return None
-
-    finally:
-        conn.close()
+    return res
 
 
 def get_user(identifier:str):
@@ -197,4 +171,4 @@ def get_user_budget(user_id):
 
 if __name__ == "__main__":
     init_tables()
-    init_test_data()
+    #init_test_data()
