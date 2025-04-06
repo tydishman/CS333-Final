@@ -1,8 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
-
 import my_auth
 import db_interface
-
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -114,25 +112,8 @@ def calendar():
     days_in_month = monthrange(year, month)[1]
 
     # Get all transactions
-    transactions = db_interface.get_transactions_of_user(user_id)
-
-    events = []
-    start_of_month = first_day_of_month
-    end_of_month = first_day_of_month.replace(day=days_in_month)
-
-    for t in transactions:
-        try:
-            date_obj = datetime.strptime(t["date"], "%Y-%m-%d")
-            if start_of_month <= date_obj <= end_of_month:
-                events.append({
-                    "date": date_obj.strftime('%Y-%m-%d'),
-                    "amount": t["amount"],
-                    "type": "expense" if t["expense"] else "income",
-                    "name": t["title"],
-                })
-        except Exception as e:
-            print("Date parse error:", e)
-
+    events = db_interface.find_events(user_id)
+    print(events)
     return render_template(
         "calendar.html",
         current_month=first_day_of_month.strftime("%B"),
@@ -222,6 +203,7 @@ def personalView():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
     pie_html, bar_html = graph.generate_graphs() 
+
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
 
 @app.route("/add_event/", methods=["POST"])
@@ -309,8 +291,7 @@ def add_event():
 
     flash("Event(s) added successfully!", "event_success")
     
-    return render_template("dashboard.html")
-
+    return redirect(url_for('personalView'))
 
 if __name__ == "__main__":
     app.run(debug = True)

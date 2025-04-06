@@ -20,11 +20,27 @@ def main():
     categories = db.get_categories_of_user(user)
     [print(category['name']) for category in categories]
 
+def get_user(identifier:str):
+    conn = db.get_db_connection()
+    user = conn.execute('SELECT * FROM users WHERE username = ? OR email = ? OR id = ?', (identifier,identifier,identifier)).fetchone()
+    conn.close()
+    return user
 
-    # print_schema()
+def find_events(user_id):
+    events = []
+    transactions = db.get_transactions_of_user(user_id)
+    for transaction in transactions:
+        events.append({
+            "date": transaction["date"],
+            "amount": transaction["amount"],
+            "type": "expense" if transaction["expense"] else "income",
+            "name": transaction["title"],
+        })
+    print("Extracted Events:", events)
+    return events
 
 # Returns boolean depending on whether the transaction was able to be added to the db
-def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, date:date) -> bool:
+def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, date:str) -> bool:
     flag = None
     category_id = get_category_id_by_name(user_id, category_name)
     if(category_id is None):
@@ -49,6 +65,7 @@ def add_category(user_id, category_name:str) -> bool:
 
 # Returns the id of a category (int), or None if the category_name is invalid
 def get_category_id_by_name(user_id, category_name:str):
+    category_name = category_name.lower()
     ret = None
     try:
         ret = db.get_category_id_by_name(user_id, category_name)
@@ -94,14 +111,15 @@ if __name__ == "__main__":
     print("Add transaction? y/n")
     flag = input()
     if(flag == "y"):
-        category_name:str = input("category_name")
+        category_name:str = input("category_name").lower()
         title:str = input("title")
         description:str = input("desc")
         amount:float = float(input("amount"))
         recurring_flag:bool = input("recurring?").lower() == "y"
         expense_flag:bool = input("expense?").lower() == "y"
+        date:str = input("date: ")
 
-        if(add_transaction(user, title, description, category_name, amount, recurring_flag, expense_flag)):
+        if(add_transaction(user, title, description, category_name, amount, recurring_flag, expense_flag, date)):
             print("transaction added successfully")
         else:
             print("Failed to add transaction")
