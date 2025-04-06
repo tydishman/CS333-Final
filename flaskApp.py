@@ -263,9 +263,19 @@ def add_event():
                         except ValueError:
                             continue
 
-    # TODO: Save these to DB later
-    for ev in events_to_add:
-        print(f"[ADD EVENT] {ev.date} - {ev.amount} - {ev.description} ({ev.type})")
+    for ev in events_to_add[1:]:  # Skip the first, already added event
+        success = db_interface.add_transaction(
+            user_id,
+            name,
+            ev.description,
+            final_category,
+            ev.amount,
+            True,
+            expense_bool,
+            ev.date.strftime("%Y-%m-%d")
+        )
+        if not success:
+            print(f"[ERROR] Failed to add recurring event: {ev}")
 
     flash("Event(s) added successfully!", "event_success")
     
