@@ -1,6 +1,7 @@
 import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import my_auth
+from datetime import date
 
 def main():
     user = db.get_user("user@email.com")
@@ -23,7 +24,7 @@ def main():
     # print_schema()
 
 # Returns boolean depending on whether the transaction was able to be added to the db
-def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool) -> bool:
+def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, date:date) -> bool:
     flag = None
     category_id = get_category_id_by_name(user_id, category_name)
     if(category_id is None):
@@ -31,7 +32,7 @@ def add_transaction(user_id, title:str, description:str, category_name:str, amou
         flag = False
         return flag
     try:
-        db.create_transaction(user_id, title, description, category_id, amount, recurring, expense)
+        db.create_transaction(user_id, title, description, category_id, amount, recurring, expense, date)
         flag = True
     except:
         flag = False
@@ -54,6 +55,12 @@ def get_category_id_by_name(user_id, category_name:str):
     except:
         ret = None
     return ret
+
+def get_transactions_of_user(user_id):
+    conn = db.get_db_connection()
+    transactions = conn.execute("SELECT * FROM transactions t JOIN users u ON t.user_id = u.id WHERE u.id = ?", (user_id,))
+    # conn.close()
+    return transactions.fetchall()
 
 if __name__ == "__main__":
     # main()

@@ -76,6 +76,8 @@ img {
 
 /* Buttons */
 button {
+  position: static;
+  display: flex;
   background-color: #debaa9;
   border: none;
   color: white;

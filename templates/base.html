@@ -34,7 +34,7 @@
     <div class="fab-modal-content">
       <span class="fab-close-btn" id="closeEventModal">&times;</span>
       <h3>Add Event</h3>
-      <form method="POST" action="{{ url_for('add_event') }}">
+      <form id="eventForm" method="POST" action="{{ url_for('add_event') }}">
         <input type="text" name="name" placeholder="Title" required>
         <input type="text" name="description" placeholder="Description" required>
         <input type="number" name="amount" step="0.01" placeholder="Amount" required>

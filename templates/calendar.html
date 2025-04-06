@@ -32,11 +32,11 @@
         <div class="day-number">{{ day }}</div>
 
         {% for event in events %}
-          {% if event.date == current_date %}
+        {% if event.date == current_date.strftime('%Y-%m-%d') %}
           <div class="calendar-event {{ event.type }}">
             <span class="event-type">{{ event.type.capitalize() }}</span>:
               ${{ event.amount }}
-              <small>({{ event.description }})</small>
+              <small>({{ event.name }})</small>
             </div>
           {% endif %}
         {% endfor %}

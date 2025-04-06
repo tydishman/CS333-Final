@@ -12,9 +12,6 @@ import graph
 from calendar import monthrange
 from http import HTTPStatus
 
-# Temporary structure for events
-Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
-
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
@@ -64,13 +61,6 @@ def landing():
         return redirect(url_for("personalView"))
     return render_template("landingPage.html")
 
-
-#make about available before signing in? or just make a lil about section in welcome page
-@app.route("/about")
-@login_required
-def about():
-    return render_template("about.html")
-
 @app.route("/signup/", methods=["POST"])
 def sign_up():
     username = request.form.get("username")
@@ -81,8 +71,6 @@ def sign_up():
         flash("Please fill out all fields.", "signup_error")
         return redirect(url_for("landing"))
 
-    # TODO: Save user to DB
-    # addUser(username, email, password)
     success = my_auth.create_user(username, email, password)
     if(success):
         flash("Sign up successful. You can now log in.", "signup_success")
@@ -106,29 +94,44 @@ def login():
 
     #need user before calendar??
 
+
+# Temporary structure for events
+Event = namedtuple('Event', ['date', 'amount', 'description', 'type'])
+
 @app.route("/calendar/")
 @login_required
 def calendar():
+    user_id = session['user_id']
     month_offset = int(request.args.get('month_offset', 0))
     today = datetime.today()
-    first_day_of_this_month = today.replace(day=1)
     
-    # Shift by offset
-    shifted_month = first_day_of_this_month + timedelta(days=month_offset * 30)
+    # Shift month by offset
+    shifted_month = today.replace(day=1) + timedelta(days=month_offset * 30)
     year = shifted_month.year
     month = shifted_month.month
 
-    # Get real first day of shifted month
     first_day_of_month = datetime(year, month, 1)
     days_in_month = monthrange(year, month)[1]
 
-    # Sample events for that month
-    events = [
-        Event(first_day_of_month.replace(day=5), 1200, "Freelance Project", "income"),
-        Event(first_day_of_month.replace(day=12), 250, "Groceries", "expense"),
-        Event(first_day_of_month.replace(day=18), 75, "Electric Bill", "expense"),
-        Event(first_day_of_month.replace(day=22), 2000, "Paycheck", "income"),
-    ]
+    # Get all transactions
+    transactions = db_interface.get_transactions_of_user(user_id)
+
+    events = []
+    start_of_month = first_day_of_month
+    end_of_month = first_day_of_month.replace(day=days_in_month)
+
+    for t in transactions:
+        try:
+            date_obj = datetime.strptime(t["date"], "%Y-%m-%d")
+            if start_of_month <= date_obj <= end_of_month:
+                events.append({
+                    "date": date_obj.strftime('%Y-%m-%d'),
+                    "amount": t["amount"],
+                    "type": "expense" if t["expense"] else "income",
+                    "name": t["title"],
+                })
+        except Exception as e:
+            print("Date parse error:", e)
 
     return render_template(
         "calendar.html",
@@ -139,8 +142,6 @@ def calendar():
         days_in_month=days_in_month,
         events=events
     )
-
-
 
 @app.route("/tips/")
 @login_required
@@ -259,7 +260,7 @@ def add_event():
     print(f"[NEW EVENT] {name} | ${amount} | {final_category} | {event_type} | {date_str} | Recurring: {recurring}")
 
     # TODO: Save to DB
-    success = db_interface.add_transaction(user_id, name, description, final_category, amount, recurring, expense_bool)
+    success = db_interface.add_transaction(user_id, name, description, final_category, amount, recurring, expense_bool, date_str)
 
     if success:
         flash("Event added successfully!", "event_success")
@@ -308,7 +309,7 @@ def add_event():
 
     flash("Event(s) added successfully!", "event_success")
     
-    return Response(status=HTTPStatus.NO_CONTENT)
+    return render_template("dashboard.html")
 
 
 if __name__ == "__main__":
