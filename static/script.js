@@ -83,20 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
     alert(msg.textContent); // Can be upgraded to toast
   });
 
-  // --- Wishlist Modal ---
-  const openWishlistBtn = document.getElementById("openWishlistModal");
-  const closeWishlistBtn = document.getElementById("closeWishlistModal");
-  const wishlistModal = document.getElementById("wishlistModal");
-
-  openWishlistBtn?.addEventListener("click", () => wishlistModal.style.display = "flex");
-  closeWishlistBtn?.addEventListener("click", () => wishlistModal.style.display = "none");
-
-  window.addEventListener("click", (e) => {
-    if (e.target === loginModal) loginModal.style.display = 'none';
-    if (e.target === signupModal) signupModal.style.display = 'none';
-    if (e.target === eventModal) eventModal.style.display = 'none';
-    if (e.target === wishlistModal) wishlistModal.style.display = 'none';
-  });
 
   // --- Form Button Enable/Disable ---
   function toggleButtonState(form, button) {

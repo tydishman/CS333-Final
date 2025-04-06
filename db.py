@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date
+
 
 DATABASE_PATH = "database.db"
 
@@ -24,7 +24,6 @@ def init_tables():
         category_id INTEGER NOT NULL,          -- Foreign key to `categories` table
         amount REAL NOT NULL,                  -- Transaction amount (can be positive or negative)
         recurring BOOLEAN DEFAULT 0,           -- Whether the transaction is recurring (1 = True, 0 = False)
-        date TEXT NOT NULL,
         created_at TEXT DEFAULT (DATETIME('now')), -- Date and time of the transaction
         user_id INTEGER NOT NULL,              -- Foreign key to `users` table
         expense BOOLEAN NOT NULL,                 -- Transaction type (0 = Expense, 1 = Income)
