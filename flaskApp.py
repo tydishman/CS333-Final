@@ -127,11 +127,48 @@ def tips():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
     
-    user_income = 4000
-    user_rent = 1600
-    user_food = 700
-    user_spending = 450
-    user_savings = 500
+    category_dict = {}
+    translation_dict = {}   # key is category ID, value is category name
+    subcategories = []
+    categories = db.get_categories_of_user(session['user_id'])
+    transactions = db.get_transactions_of_user(session['user_id'])
+
+    for c in categories:
+        category_id = c['ID']
+        category_dict[category_id] = []
+
+    for transaction in transactions:
+        category_id = str(transaction['category_id'])
+
+        try:
+            category_dict[category_id].append(transaction)
+        except KeyError:
+            category_dict[category_id] = [transaction]
+
+        if transaction['title'] not in subcategories:
+            subcategories.append(transaction['title'])
+
+        for category_id in category_dict.keys():
+            category_name = db.get_category_name_by_id(transaction['user_id'], category_id)
+            translation_dict[category_name] = category_id
+
+    def sum_expenses(category_name):
+        expenses_transactions = category_dict[translation_dict[category_name]]
+        expenses = 0.0
+        for x in expenses_transactions:
+            value = float(transaction['amount'])
+            if(bool(transaction['expense'])):
+                expenses += value
+            else:
+                expenses -= value
+        return expenses
+    user_income = sum_expenses('paycheck')
+    user_rent = sum_expenses('rent')
+    user_food = sum_expenses('groceries')
+    user_spending = sum_expenses('spending')
+    user_savings = sum_expenses('savings')
+
+    print(user_income, user_rent, user_food, user_spending, user_savings)
 
     spending_analysis = suggestions.analyze_spending(user_income, user_rent, user_food, user_spending, user_savings)
     budget_tips = suggestions.get_budget_tips(user_income, user_rent, user_food, user_spending, user_savings)
