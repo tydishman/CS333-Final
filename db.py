@@ -19,7 +19,7 @@ def init_tables():
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,  -- Auto-incrementing transaction ID
-        title TEXT,
+        title TEXT NOT NULL,
         description TEXT,
         category_id INTEGER NOT NULL,          -- Foreign key to `categories` table
         amount REAL NOT NULL,                  -- Transaction amount (can be positive or negative)
@@ -108,10 +108,10 @@ def get_user(identifier:str):
     conn.close()
     return user
 
-def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, date:date, recurring:bool, expense:bool):
+def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool, input_date):
     title = title.lower()
     conn = get_db_connection()
-    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, date, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, date, user_id, expense))
+    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user_id, expense, input_date))
     conn.commit()
     conn.close()
 
@@ -140,6 +140,12 @@ def get_category_id_by_name(user_id, category_name:str):
     category_id = conn.execute("SELECT c.id FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.name = ?", (user_id, category_name)).fetchone()
     conn.close()
     return category_id['id']
+
+def get_category_name_by_id(user_id, category_id:str):
+    conn = get_db_connection()
+    category = conn.execute("SELECT c.name FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.id = ?", (user_id, category_id)).fetchone()
+    conn.close()
+    return category['name']
 
 if __name__ == "__main__":
     init_tables()

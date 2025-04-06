@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
 import my_auth
 import db_interface
+import db
+
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
 from datetime import datetime, timedelta
@@ -202,8 +204,10 @@ def logout():
 def personalView():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
-    pie_html, bar_html = graph.generate_graphs() 
+    
+    transaction_list = db.get_transactions_of_user(session['user_id'])
 
+    pie_html, bar_html = graph.generate_graphs(transaction_list, None, 5000.00) 
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
 
 @app.route("/add_event/", methods=["POST"])
@@ -237,11 +241,11 @@ def add_event():
     expense_bool = event_type.lower() == "expense"
 
     date_str = request.form.get("date")
+    print(date_str)
     recurring = 'recurring' in request.form
 
     print(f"[NEW EVENT] {name} | ${amount} | {final_category} | {event_type} | {date_str} | Recurring: {recurring}")
 
-    # TODO: Save to DB
     success = db_interface.add_transaction(user_id, name, description, final_category, amount, recurring, expense_bool, date_str)
 
     if success:

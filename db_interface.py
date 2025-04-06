@@ -1,5 +1,6 @@
 import db
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
 import my_auth
 from datetime import date
 
@@ -40,7 +41,7 @@ def find_events(user_id):
     return events
 
 # Returns boolean depending on whether the transaction was able to be added to the db
-def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, date:str) -> bool:
+def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, input_date) -> bool:
     flag = None
     category_id = get_category_id_by_name(user_id, category_name)
     if(category_id is None):
@@ -48,7 +49,7 @@ def add_transaction(user_id, title:str, description:str, category_name:str, amou
         flag = False
         return flag
     try:
-        db.create_transaction(user_id, title, description, category_id, amount, recurring, expense, date)
+        db.create_transaction(user_id, title, description, category_id, amount, recurring, expense, input_date)
         flag = True
     except:
         flag = False
@@ -62,6 +63,7 @@ def add_category(user_id, category_name:str) -> bool:
     except:
         flag = False
     return flag
+
 
 # Returns the id of a category (int), or None if the category_name is invalid
 def get_category_id_by_name(user_id, category_name:str):
@@ -103,7 +105,7 @@ if __name__ == "__main__":
     flag = input()
     if(flag == "y"):
         in_name = input("Category name")
-        if(add_category(user, in_name)):
+        if(add_category(user['id'], in_name)):
             print("Category added successfully")
         else:
             print("Failed to add category")
@@ -117,11 +119,12 @@ if __name__ == "__main__":
         amount:float = float(input("amount"))
         recurring_flag:bool = input("recurring?").lower() == "y"
         expense_flag:bool = input("expense?").lower() == "y"
-        date:str = input("date: ")
+        date_str = input("date")
+        date_str = "2025-03-15"
 
-        if(add_transaction(user, title, description, category_name, amount, recurring_flag, expense_flag, date)):
+        if(add_transaction(user['id'], title, description, category_name, amount, recurring_flag, expense_flag, date_str)):
             print("transaction added successfully")
         else:
             print("Failed to add transaction")
     # print(db.get_transactions_of_user(user))
-    [print(f"Title: {x['title']} | Description: {x['description']}") for x in db.get_transactions_of_user(user)]
+    [print(f"Title: {x['title']} | Description: {x['description']}") for x in db.get_transactions_of_user(user['id'])]

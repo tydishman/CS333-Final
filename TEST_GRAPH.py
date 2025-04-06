@@ -1,6 +1,8 @@
 import plotly.graph_objs as go
 import numpy as np
-import db
+
+def main():
+    pass
 
 def pastel_gradient(n, base_color, alpha_start=0.5, alpha_end=0.9, darken_factor=0.2):
     alphas = np.linspace(alpha_start, alpha_end, n)  # Smooth gradient
@@ -10,15 +12,9 @@ def pastel_gradient(n, base_color, alpha_start=0.5, alpha_end=0.9, darken_factor
         shades.append('rgba({}, {}, {}, {})'.format(*(int(c * 255) for c in darkened_color), alpha))
     return shades
 
-def generate_graphs(transaction_list, category_translations, total_budget):
-    # Define spending categories and values
-    # categories = ["Housing", "Food", "Entertainment"]
-    # subcategories = [["Rent", "Utilities"], ["Groceries", "Dining Out"], ["Movies", "Games"]]
-    # vals = np.array([[50., 340], [40., 50.], [45., 70.]])  # Sub-category spending
-
+def generate_graphs(transaction_list):
     total_spent = 0.0
     category_dict = {}
-    translation_dict = {}   # key is category ID, value is category name
     subcategories = []
     num_main_categories = 0
     num_subcategories = 0
@@ -37,17 +33,15 @@ def generate_graphs(transaction_list, category_translations, total_budget):
             subcategories.append(transaction['title'])
             num_subcategories += 1
 
-        value = float(transaction['amount'])
+        value = float(transaction['value'])
         if(bool(transaction['expense'])):
             total_spent += value
         else:
             total_spent -= value
 
-    for category_id in category_dict.keys():
-        category_name = db.get_category_name_by_id(transaction['user_id'], category_id)
-        translation_dict[category_id] = category_name
-
-    # Define total budget
+            
+        # Define total budget
+    total_budget = 5000.00
     remaining = total_budget - total_spent  # Money left or over budget
 
 
@@ -64,24 +58,26 @@ def generate_graphs(transaction_list, category_translations, total_budget):
         local_expense = 0.0
         for transaction in category_dict[category_id]:
             if(bool(transaction['expense'])):
-                local_expense += transaction['amount']
+                local_expense += transaction['value']
             else:
-                local_expense -= transaction['amount']
+                local_expense -= transaction['value']
         main_category_values.append(local_expense)
 
     subcategory_values = []
     for title in subcategories:
-        subcategory_values.append(sum(float(transaction['amount']) for transaction in transaction_list if transaction['title'] == title))
+        subcategory_values.append(sum(float(transaction['value']) for transaction in transaction_list if transaction['title'] == title))
     # Create pie chart for spending breakdown
 
-    in_labels = list(translation_dict.values())
-    for i in range(len(in_labels)):
-        in_labels[i] = in_labels[i].capitalize()
-    print(in_labels)
+    print(list(category_dict.keys()))
+    print(subcategories)
+    print()
+    print(main_category_values)
+    print(subcategory_values)
+    # exit()
 
     # May need to rework the alignment on the two graphs
     fig_pie = go.Figure()
-    fig_pie.add_trace(go.Pie(labels=in_labels, values=main_category_values, hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
+    fig_pie.add_trace(go.Pie(labels=list(category_dict.keys()), values=main_category_values, hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='outside'))
     fig_pie.add_trace(go.Pie(labels=subcategories, values=subcategory_values, hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='inside', insidetextorientation='horizontal'))
@@ -95,30 +91,22 @@ def generate_graphs(transaction_list, category_translations, total_budget):
         )
     )
 
-    # Create bar chart for budget vs. actual spending
-    labels = ["Budget", "Spent", "Remaining"]
-    values = [total_budget, total_spent, remaining]
+    fig_pie.show()
 
-    fig_bar = go.Figure([go.Bar(x=labels, y=values, text=values, textposition='auto', marker=dict(color=["#debaa9", "#f6f0e4", "#bddbcf"]))])
-    fig_bar.update_layout(
-        title_text="Budget vs. Actual Spending",
-        yaxis_title="Amount ($)",
-        font=dict(
-            family="Noto Sans, serif",
-            size=14,
-            color="#8b4900"
-        ),
-        plot_bgcolor="#fff9f5",   # Inside the graph area
-        paper_bgcolor="#ffffff"   # Around the graph area
-    )
+    print(category_dict)
+    print(total_spent) 
 
-    # Return HTML representation of the graphs
-    pie_html = fig_pie.to_html(full_html=False)
-    bar_html = fig_bar.to_html(full_html=False)
 
-    # fig_pie.show()
 
-    return pie_html, bar_html
+    print(num_main_categories)
+    print(num_subcategories)
 
 if __name__ == "__main__":
-    generate_graphs()
+    event1 = {'category_id':1, 'expense':1, 'value':13, 'title':"subcategory1"}
+    event2 = {'category_id':1, 'expense':0, 'value':3, 'title':"subcategory2"}
+    event3 = {'category_id':2, 'expense':1, 'value':17, 'title':"subcategory3"}
+    event4 = {'category_id':3, 'expense':1, 'value':3, 'title':"subcategory4"}
+
+
+    mylist = [event1, event2, event3, event4]
+    generate_graphs(mylist)
