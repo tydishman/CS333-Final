@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import my_auth
 import db_interface
 import db
+import suggestions
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps
@@ -78,6 +79,7 @@ def login():
 
     if user:
         session['user_id'] = user['id']
+        session['username'] = user['username']
         return redirect(url_for("personalView"))
 
     flash("Invalid username or password", "login_error")
@@ -119,7 +121,19 @@ def calendar():
 def tips():
     if 'user_id' not in session:
         return redirect(url_for("landing"))
-    return render_template("tips.html")
+    
+    user_income = 4000
+    user_rent = 1600
+    user_food = 700
+    user_spending = 450
+    user_savings = 500
+
+    spending_analysis = suggestions.analyze_spending(user_income, user_rent, user_food, user_spending, user_savings)
+    budget_tips = suggestions.get_budget_tips(user_income, user_rent, user_food, user_spending, user_savings)
+    
+    print(budget_tips)
+
+    return render_template("tips.html",spending_analysis=spending_analysis, budget_tips=budget_tips)
 
 @app.route('/budget/', methods=['GET', 'POST'])
 def budget():
@@ -181,7 +195,7 @@ def personalView():
     transaction_list = db.get_transactions_of_user(session['user_id'])
 
     pie_html, bar_html = graph.generate_graphs(transaction_list, None, 5000.00) 
-    return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html)
+    return render_template("dashboard.html", username=session['username'] ,pie_html=pie_html, bar_html=bar_html)
 
 @app.route("/add_event/", methods=["POST"])
 def add_event():
