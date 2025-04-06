@@ -14,7 +14,8 @@ def init_tables():
         email TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
         created_at TEXT DEFAULT (DATETIME('now')),
-        last_login TEXT
+        last_login TEXT,
+        budget FLOAT NOT NULL DEFAULT 0.0
     );"""
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
@@ -42,6 +43,22 @@ def init_tables():
     cur.execute(create_transactions_table)
     cur.execute(create_categories_table)
     con.close()
+
+
+def add_budget_column():
+    conn = sqlite3.connect(DATABASE_PATH)
+    cursor = conn.cursor()
+
+    # Check the columns in the 'users' table
+    cursor.execute("PRAGMA table_info(users);")
+    columns = [column['name'] for column in cursor.fetchall()]
+
+    # If the 'budget' column doesn't exist, add it
+    if 'budget' not in columns:
+        cursor.execute("ALTER TABLE users ADD COLUMN budget FLOAT NOT NULL DEFAULT 0.0;")
+        conn.commit()
+
+    conn.close()
 
 def init_test_data():
     create_user('user', 'user@email.com', 'myhash')
@@ -99,6 +116,7 @@ def create_user(username:str, email:str, hashed_password:str):
 
     conn.commit()
     conn.close()
+
     return res
 
 def get_user(identifier:str):
@@ -146,6 +164,24 @@ def get_category_name_by_id(user_id, category_id:str):
     conn.close()
     return category['name']
 
+def save_user_budget(user_id, total_budget):
+    conn = get_db_connection()
+
+    # Update the user's budget
+    conn.execute("UPDATE users SET budget = ? WHERE ID = ?", (total_budget, user_id))
+    conn.commit()
+    conn.close()
+
+def get_user_budget(user_id):
+    conn = get_db_connection()
+    budget_query = "SELECT budget FROM users WHERE ID = ?"
+    budget_result = conn.execute(budget_query, (user_id,)).fetchone()
+    total_budget = budget_result[0] if budget_result else 0.0
+
+    conn.close()
+
+    return total_budget
+
 if __name__ == "__main__":
     init_tables()
-    init_test_data()
+    #init_test_data()

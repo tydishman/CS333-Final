@@ -142,48 +142,17 @@ def tips():
 
 @app.route('/budget/', methods=['GET', 'POST'])
 def budget():
-    #user_id = current_user.id 
-    #if request.method == 'POST':
-    #    allocations = request.form.to_dict()
-    #    for category, percent in allocations.items():
-    #        # Save or update each allocation (you’ll need a Budget table)
-    #        existing = Budget.query.filter_by(user_id=user_id, category=category).first()
-    ##        if existing:
-     #           existing.percentage = float(percent)
-      #      else:
-       #         db.session.add(Budget(user_id=user_id, category=category, percentage=float(percent)))
-        #db.session.commit()
-        #flash("Budget updated!", "success")
-        #return redirect(url_for('budget'))
+    if 'user_id' not in session:
+        return redirect(url_for("landing"))
 
-    #current_allocations = Budget.query.filter_by(user_id=user_id).all()
-    #return render_template('budget.html', allocations=current_allocations)
+    total_budget = db.get_user_budget(session['user_id'])
 
-    # Simulate session-based user
-    dummy_user_id = 1
-
-    # Static in-memory "database" — gets reset on app restart
-    if 'dummy_budgets' not in session:
-        session['dummy_budgets'] = {
-            'Rent': 30.0,
-            'Groceries': 20.0,
-            'Savings': 15.0,
-            'Utilities': 10.0,
-            'Entertainment': 15.0,
-            'Other': 10.0
-        }
-
-    if request.method == 'POST':
-        allocations = request.form.to_dict()
-        session['dummy_budgets'] = {
-            k: float(v) for k, v in allocations.items()
-        }
-        flash("Budget updated! (dummy)", "success")
-        return redirect(url_for('budget'))
-
-    allocations = session['dummy_budgets']
-    return render_template('budget.html', allocations=allocations)
-
+    if request.method == "POST":
+        total_budget = request.form.get("total-budget")
+        db.save_user_budget(session['user_id'], total_budget)
+        flash("Your budget has been updated!", "success")
+        return redirect(url_for("budget"))
+    return render_template("budget.html", total_budget=total_budget)
 
 @app.route("/logout/")
 def logout():
@@ -199,7 +168,8 @@ def personalView():
     
     transaction_list = db.get_transactions_of_user(session['user_id'])
     events = db_interface.find_events(session['user_id'])  # This contains recent events
-    pie_html, bar_html = graph.generate_graphs(transaction_list, None, 5000.00)
+    total_budget = db.get_user_budget(session['user_id'])
+    pie_html, bar_html = graph.generate_graphs(transaction_list, None, total_budget)
     return render_template("dashboard.html", pie_html=pie_html, bar_html=bar_html, recent_events=events)
 
 @app.route("/add_event/", methods=["POST"])

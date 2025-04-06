@@ -42,7 +42,6 @@ def find_events(user_id):
         })
     return events
 
-
 # Returns boolean depending on whether the transaction was able to be added to the db
 def add_transaction(user_id, title:str, description:str, category_name:str, amount:float, recurring:bool, expense:bool, input_date) -> bool:
     flag = None
