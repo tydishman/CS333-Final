@@ -15,7 +15,7 @@ def init_tables():
         password_hash TEXT NOT NULL,
         created_at TEXT DEFAULT (DATETIME('now')),
         last_login TEXT,
-        budget FLOAT NOT NULL DEFAULT 0.0
+        budget FLOAT DEFAULT 0.0
     );"""
 
     create_transactions_table = """CREATE TABLE IF NOT EXISTS transactions (
@@ -197,4 +197,4 @@ def get_user_budget(user_id):
 
 if __name__ == "__main__":
     init_tables()
-    # init_test_data()
+    init_test_data()
