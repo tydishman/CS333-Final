@@ -5,13 +5,18 @@
 <h2 class="budget-title">Set Your Monthly Budget Allocation</h2>
 
 <form method="POST" class="budget-form">
-  {% for category in ['Housing', 'Groceries', 'Spending', 'Paycheck', 'Savings', 'Other'] %}
+  <!-- Add a spot for the total budget -->
+  <div class="budget-input-group">
+    <label for="total-budget">Total Budget ($)</label>
+    <input type="number" step="0.01" name="total-budget" id="total-budget" value="{{ total_budget }}" required>
+  </div>
+
+  {% for category in ['Housing', 'Groceries', 'Spending', 'Savings', 'Other'] %}
     {% set value = allocations|selectattr("category", "equalto", category)|map(attribute="percentage")|first or '' %}
     <div class="budget-input-group">
       <label for="{{ category }}">{{ category }} (%)</label>
       <input type="number" step="0.01" name="{{ category }}" id="{{ category }}" value="{{ value }}" required>
     </div>
-    
   {% endfor %}
 
   <button type="submit" class="btn-submit">Save Budget</button>
