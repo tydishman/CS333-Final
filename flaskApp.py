@@ -17,37 +17,6 @@ from http import HTTPStatus
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Dummy database
-# fake_db = {
-#     "testuser": {
-#         "username": "testuser",
-#         "email": "test@example.com",
-#         "password_hash": generate_password_hash("password123")
-#     }
-# }
-
-# def get_user_by_username(username):
-#     return fake_db.get(username)
-
-# def get_user_by_email(email):
-#     return fake_db.get(email)
-
-# def get_user_by_username_or_email(identifier):
-#     for user in fake_db.values():
-#         if user["username"] == identifier or user["email"] == identifier:
-#             return user
-#     return None
-
-# def addUser(username, email, password):
-#     if username in fake_db or email in fake_db:
-#         return False  # Username already exists
-#     fake_db[username] = {
-#         "username": username,
-#         "email": email,
-#         "password_hash": generate_password_hash(password)
-#     }
-#     return True
-
 @app.route("/")
 def landing():
     if 'user_id' in session:
@@ -256,7 +225,7 @@ def add_event():
 
     if success:
         flash("Event added successfully!", "event_success")
-        return redirect(url_for("personalView"))
+        #return redirect(url_for("personalView"))
     else:
         flash("Failed to add event", "event_error")
 
