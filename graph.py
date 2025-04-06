@@ -55,11 +55,15 @@ def generate_graphs(transaction_list, category_translations, total_budget):
     outer_colors = pastel_gradient(num_main_categories, base_color_outer, alpha_start=0.5, alpha_end=0.85, darken_factor=0.3)  # Darker brown shades
     inner_colors = pastel_gradient(num_subcategories, base_color_inner, alpha_start=0.5, alpha_end=0.875,darken_factor=0.3)  # Green gradient
 
+    main_category_values = [sum(float(transaction['value'])for transaction in category_dict[category_id] for category_id in category_dict)]
+    subcategory_values = []
+    for title in subcategories:
+        subcategory_values.append(sum(float(transaction['value']) for transaction in transaction_list if transaction['title'] == title))
     # Create pie chart for spending breakdown
     fig_pie = go.Figure()
-    fig_pie.add_trace(go.Pie(labels=category_dict.keys(), values=vals.sum(axis=1), hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
+    fig_pie.add_trace(go.Pie(labels=category_dict.keys(), values=main_category_values, hole=0.2, name="Main Categories", marker=dict(colors=outer_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='outside'))
-    fig_pie.add_trace(go.Pie(labels=subcategories, values=vals.flatten(), hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
+    fig_pie.add_trace(go.Pie(labels=subcategories, values=subcategory_values, hole=0.6, name="Sub-categories", marker=dict(colors=inner_colors),
                              textinfo='label+percent', hoverinfo='label+value+percent', textposition='inside', insidetextorientation='horizontal'))
 
     fig_pie.update_layout(
