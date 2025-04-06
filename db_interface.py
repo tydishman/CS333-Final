@@ -32,8 +32,6 @@ def add_transaction(user_id, title:str, description:str, category_name:str, amou
         flag = False
         return flag
     try:
-        # date_object = datetime.strptime(input_date, "%Y-%m-%d").date()
-        print("Date: ", input_date)
         db.create_transaction(user_id, title, description, category_id, amount, recurring, expense, input_date)
         flag = True
     except:
@@ -48,6 +46,7 @@ def add_category(user_id, category_name:str) -> bool:
     except:
         flag = False
     return flag
+
 
 # Returns the id of a category (int), or None if the category_name is invalid
 def get_category_id_by_name(user_id, category_name:str):

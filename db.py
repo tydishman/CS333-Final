@@ -140,6 +140,12 @@ def get_category_id_by_name(user_id, category_name:str):
     conn.close()
     return category_id['id']
 
+def get_category_name_by_id(user_id, category_id:str):
+    conn = get_db_connection()
+    category = conn.execute("SELECT c.name FROM categories c JOIN users u ON c.user_id = u.id WHERE u.id = ? AND c.id = ?", (user_id, category_id)).fetchone()
+    conn.close()
+    return category['name']
+
 if __name__ == "__main__":
     init_tables()
     init_test_data()
