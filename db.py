@@ -107,10 +107,10 @@ def get_user(identifier:str):
     conn.close()
     return user
 
-def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool):
+def create_transaction(user_id, title:str, description:str, category_id:int, amount:float, recurring:bool, expense:bool, input_date):
     title = title.lower()
     conn = get_db_connection()
-    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense) VALUES (?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user_id, expense))
+    conn.execute("INSERT INTO transactions(title, description, category_id, amount, recurring, user_id, expense, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (title, description, category_id, amount, recurring, user_id, expense, input_date))
     conn.commit()
     conn.close()
 
