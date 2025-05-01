@@ -31,20 +31,35 @@ jobs:
           env: 
             DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
             DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PAT }}
+            DOCKERHUB_REPO: ${{ vars.DOCKERHUB_REPO }}
           run: echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
         - name: Build and push image
           run: |
-            docker build -t tdishman/cs333_final:v1 .
-            docker push tdishman/cs333_final:v1
+            docker build -t "$DOCKERHUB_REPO":v1 .
+            docker push "$DOCKERHUB_REPO":v1
     
-    # vps-dockerhub-pull-and-build:
-    #   needs: local-dockerhub-push
-    #   runs-on: ubuntu-latest
+    vps-dockerhub-pull-and-build:
+      needs: local-dockerhub-push
+      runs-on: ubuntu-latest
 
-    #   # 1. SSH into VPS
-    #   # 2. Pull from Dockerhub onto VPS
-    #   # 3. 
-    #   # 3. Build and run image
-    #   steps:
+      # 1. SSH into VPS
+      # 2. Pull from Dockerhub onto VPS
+      # 3. 
+      # 3. Build and run image
+      steps:
+        # - uses: actions/checkout@v4
+        - name: SSH into VPS
+          env:
+            VPS_SSH_HOST: ${{ secrets.VPS_HOST }}
+            VPS_SSH_KEY: ${{ secrets.VPS_SSH }}
+            VPS_SSH_USER: ${{ secrets.VPS_USER }}
 
-
+          run: ssh $VPS_SSH_USER@$VPS_SSH_HOST -i $VPS_SSH_KEY
+        - name: Pull image from Dockerhub
+          env:
+            DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+            DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PAT }}
+            DOCKERHUB_REPO: ${{ vars.DOCKERHUB_REPO }}
+          run: |
+            echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
+            docker pull "$DOCKERHUB_REPO":v1
