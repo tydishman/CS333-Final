@@ -19,7 +19,8 @@ jobs:
         - name: Test with pytest
           run: |
             python -m pytest
-    dockerhub-push:
+
+    local-dockerhub-push:
       # https://docs.docker.com/reference/cli/docker/login/#password-stdin
       needs: test
       runs-on: ubuntu-latest
@@ -27,12 +28,21 @@ jobs:
       steps:
         - uses: actions/checkout@v4
         - name: Login to Dockerhub via CLI
-          env:
-            DOCKERHUB_USER: 
-            DOCKERHUB_PASS: 
-          run: echo "${{ secrets.DOCKERHUB_PAT }}" | docker login --username "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          env: 
+            DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+            DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PAT }}
+          run: echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
         - name: Build and push image
           run: |
             docker build -t tdishman/cs333_final:v1 .
             docker push tdishman/cs333_final:v1
-          
+    
+    vps-dockerhub-pull-and-build:
+      needs: local-dockerhub-push
+      runs-on: ubuntu-latest
+
+      # 1. SSH into VPS
+      # 2. Pull from Dockerhub onto VPS
+      # 3. 
+      # 3. Build and run image
+
