@@ -37,12 +37,14 @@ jobs:
             docker build -t tdishman/cs333_final:v1 .
             docker push tdishman/cs333_final:v1
     
-    vps-dockerhub-pull-and-build:
-      needs: local-dockerhub-push
-      runs-on: ubuntu-latest
+    # vps-dockerhub-pull-and-build:
+    #   needs: local-dockerhub-push
+    #   runs-on: ubuntu-latest
 
-      # 1. SSH into VPS
-      # 2. Pull from Dockerhub onto VPS
-      # 3. 
-      # 3. Build and run image
+    #   # 1. SSH into VPS
+    #   # 2. Pull from Dockerhub onto VPS
+    #   # 3. 
+    #   # 3. Build and run image
+    #   steps:
+
 
