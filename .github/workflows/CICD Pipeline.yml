@@ -63,5 +63,5 @@ jobs:
           run: |
             echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
             docker pull "$DOCKERHUB_REPO:v1"
-        - name: Run Docker image
-          env: 
+        # - name: Run Docker image
+        #   env: 
