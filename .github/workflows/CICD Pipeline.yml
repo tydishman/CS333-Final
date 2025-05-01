@@ -20,20 +20,19 @@ jobs:
           run: |
             python -m pytest
     dockerhub-push:
+      # https://docs.docker.com/reference/cli/docker/login/#password-stdin
       needs: test
       runs-on: ubuntu-latest
 
       steps:
         - uses: actions/checkout@v4
         - name: Login to Dockerhub via CLI
-        - description: https://docs.docker.com/reference/cli/docker/login/#password-stdin
-        env:
-          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-        run: cat "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
+          env:
+            DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+            DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+          run: cat "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
         - name: Build and push image
-        - description: Builds and pushes the image to Dockerhub
-        run: |
-          docker build -t tdishman/cs333_final:v1 .
-          docker push tdishman/cs333_final:v1
+          run: |
+            docker build -t tdishman/cs333_final:v1 .
+            docker push tdishman/cs333_final:v1
           
