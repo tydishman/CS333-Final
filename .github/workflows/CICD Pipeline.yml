@@ -28,9 +28,9 @@ jobs:
         - uses: actions/checkout@v4
         - name: Login to Dockerhub via CLI
           env:
-            DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-            DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
-          run: echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
+            DOCKERHUB_USER: 
+            DOCKERHUB_PASS: 
+          run: echo "${{ secrets.DOCKERHUB_PASS }}" | docker login --username "${{ secrets.DOCKERHUB_USER }}" --password-stdin
         - name: Build and push image
           run: |
             docker build -t tdishman/cs333_final:v1 .
