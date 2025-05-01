@@ -35,8 +35,8 @@ jobs:
           run: echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
         - name: Build and push image
           run: |
-            docker build -t "$DOCKERHUB_REPO":v1 .
-            docker push "$DOCKERHUB_REPO":v1
+            docker build -t "$DOCKERHUB_REPO:v1" .
+            docker push "$DOCKERHUB_REPO:v1"
     
     vps-dockerhub-pull-and-build:
       needs: local-dockerhub-push
@@ -62,4 +62,6 @@ jobs:
             DOCKERHUB_REPO: ${{ vars.DOCKERHUB_REPO }}
           run: |
             echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
-            docker pull "$DOCKERHUB_REPO":v1
+            docker pull "$DOCKERHUB_REPO:v1"
+        - name: Run Docker image
+          env: 
