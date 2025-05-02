@@ -40,7 +40,7 @@ jobs:
             docker push "$DOCKERHUB_REPO:v1"
     
     vps-dockerhub-pull-and-build:
-      # needs: local-dockerhub-push
+      needs: local-dockerhub-push
       runs-on: ubuntu-latest
 
       # 1. SSH into VPS
