@@ -72,3 +72,4 @@ jobs:
 
             rm key.temp
             echo "Key removed"
+            
