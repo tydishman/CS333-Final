@@ -61,7 +61,7 @@ jobs:
           run: |
             echo "$VPS_SSH_KEY" > key.temp
             chmod 600 key.temp
-            ssh "$VPS_SSH_USER@$VPS_SSH_HOST" -i $VPS_SSH_KEY << EOF
+            ssh "$VPS_SSH_USER@$VPS_SSH_HOST" -i key.temp << EOF
                 echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
                 docker pull "$DOCKERHUB_REPO:v1"
                 docker run "$DOCKERHUB_REPO:v1"
