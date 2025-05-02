@@ -59,9 +59,12 @@ jobs:
           
           # Temporarily write the SSH key to a file, use that to SSH in, execute commands, then remove the file
           run: |
-            echo "$VPS_SSH_KEY" | base64 -d > key.temp
+            echo "-----BEGIN OPENSSH PRIVATE KEY-----" > key.temp
+            echo "$VPS_SSH_KEY" > key.temp
+            echo "-----END OPENSSH PRIVATE KEY-----" > key.temp
+
             chmod 600 key.temp
-            ssh -i key.temp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "$VPS_SSH_USER@$VPS_SSH_HOST" -t << EOF
+            ssh -i key.temp -o StrictHostKeyChecking=no "$VPS_SSH_USER@$VPS_SSH_HOST" -t << EOF
                 echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
                 docker pull "$DOCKERHUB_REPO:v1"
                 docker run "$DOCKERHUB_REPO:v1"
