@@ -66,7 +66,11 @@ jobs:
                 echo "Logged in"
                 docker pull "$DOCKERHUB_REPO:v1"
                 echo "Image pulled from $DOCKERHUB_REPO"
-                docker run -d "$DOCKERHUB_REPO:v1"
+
+                docker stop mycontainer || true
+                docker rm mycontainer || true
+
+                docker run --name mycontainer -d -p 5023:5000 "$DOCKERHUB_REPO:v1"
                 echo "Container started"
             EOF
 
