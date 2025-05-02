@@ -65,11 +65,10 @@ jobs:
                 echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
                 echo "Logged in"
                 docker pull "$DOCKERHUB_REPO:v1"
-                echo "Image pulled from repo"
-                docker run "$DOCKERHUB_REPO:v1"
+                echo "Image pulled from $DOCKERHUB_REPO"
+                docker run -d "$DOCKERHUB_REPO:v1"
                 echo "Container started"
             EOF
 
             rm key.temp
             echo "Key removed"
-            
