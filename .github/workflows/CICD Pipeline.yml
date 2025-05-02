@@ -63,8 +63,12 @@ jobs:
             chmod 600 key.temp
             ssh -i key.temp -o StrictHostKeyChecking=no "$VPS_SSH_USER@$VPS_SSH_HOST" -t << EOF
                 echo "$DOCKERHUB_PASS" | docker login --username "$DOCKERHUB_USER" --password-stdin
+                echo "Logged in"
                 docker pull "$DOCKERHUB_REPO:v1"
+                echo "Image pulled from repo"
                 docker run "$DOCKERHUB_REPO:v1"
+                echo "Container started"
             EOF
 
             rm key.temp
+            echo "Key removed"
