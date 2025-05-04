@@ -106,6 +106,10 @@ def tips():
         category_id = c['ID']
         category_dict[category_id] = []
 
+    # BUG - if no transactions yet logged, the /tips/ route will crash due to empty translation table
+    if len(transactions) == 0:
+        return render_template("tips.html", budget_tips="No data entered")
+
     for transaction in transactions:
         category_id = int(transaction['category_id'])
 
