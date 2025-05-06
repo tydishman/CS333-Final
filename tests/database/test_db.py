@@ -32,7 +32,7 @@ class Test_db:
     def test_create_category_and_get_id(self, init_db):
         db.db_create_user("test", "test@email.com", "hashedpass")
         user = db.get_user("test")
-        db.create_category(user["id"], "Food")
+        db.create_category(user["id"], "Fo4124od")
         retrieved_id = db.get_category_id_by_name(user["id"], "food")
         assert retrieved_id is not None
 
