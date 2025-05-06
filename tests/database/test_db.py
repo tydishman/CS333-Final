@@ -7,7 +7,7 @@ import tempfile
 class Test_db:
 
     @pytest.fixture
-    def memory_db(self, monkeypatch):
+    def init_db(self, monkeypatch):
         # Create a temporary file to act as the SQLite DB. Avoids issues that I had using the in-memory database
         with tempfile.NamedTemporaryFile(delete=False) as tmp:
             temp_db_path = tmp.name
@@ -22,22 +22,21 @@ class Test_db:
             pass
         os.remove(temp_db_path)
 
-    def test_db_create_user_and_retrieve(self, memory_db):
-        print(db.DATABASE_PATH)
+    def test_db_create_user_and_retrieve(self, init_db):
         db.print_schema()
         db.db_create_user("test", "test@email.com", "hashedpass")
         user = db.get_user("test")
         assert user is not None
         assert user["username"] == "test"
 
-    def test_create_category_and_get_id(self, memory_db):
+    def test_create_category_and_get_id(self, init_db):
         db.db_create_user("test", "test@email.com", "hashedpass")
         user = db.get_user("test")
         db.create_category(user["id"], "Food")
         retrieved_id = db.get_category_id_by_name(user["id"], "food")
         assert retrieved_id is not None
 
-    def test_create_transaction_and_get(self, memory_db):
+    def test_create_transaction_and_get(self, init_db):
         db.db_create_user("test", "test@email.com", "hashedpass")
         user = db.get_user("test")
         db.create_category(user["id"], "Bills")
@@ -48,7 +47,7 @@ class Test_db:
         assert len(txs) == 1
         assert txs[0]["title"] == "rent"
 
-    def test_get_user_budget_and_update(self, memory_db):
+    def test_get_user_budget_and_update(self, init_db):
         db.db_create_user("test", "test@email.com", "hashedpass")
         user = db.get_user("test")
         assert db.get_user_budget(user["id"]) == 0.0
@@ -56,7 +55,7 @@ class Test_db:
         db.save_user_budget(user["id"], 2500.0)
         assert db.get_user_budget(user["id"]) == 2500.0
 
-    def test_create_multiple_users_and_categories(self, memory_db):
+    def test_create_multiple_users_and_categories(self, init_db):
         db.db_create_user("test", "test@email.com", "hashedpass")
         db.db_create_user("test2", "test2@email.com", "hashedpass")
         test_user1 = db.get_user("test")
