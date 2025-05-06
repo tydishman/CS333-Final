@@ -1,18 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import my_auth
 import db_interface
 import db
 import suggestions
 import markdown
 
-from werkzeug.security import check_password_hash, generate_password_hash
-from functools import wraps
 from datetime import datetime, timedelta
 from collections import namedtuple
-import numpy as np
 import graph
 from calendar import monthrange
-from http import HTTPStatus
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
@@ -209,6 +205,7 @@ def add_event():
             final_category = new_category
         else:
             flash("Failed to add new category", "event_error")
+            return redirect(url_for("landing"))
     else:
         final_category = category
 
@@ -229,9 +226,9 @@ def add_event():
 
     if success:
         flash("Event added successfully!", "event_success")
-        #return redirect(url_for("personalView"))
     else:
         flash("Failed to add event", "event_error")
+        return redirect(url_for("personalView"))
 
     recurrence_type = request.form.get("recurrence_type")
     custom_days = request.form.get("custom_days", "")

@@ -50,12 +50,12 @@ jobs:
         # - uses: actions/checkout@v4
         - name: SSH into VPS
           env:
-            VPS_SSH_HOST: ${{ secrets.VPS_HOST }}
-            VPS_SSH_KEY: ${{ secrets.VPS_SSH }}
-            VPS_SSH_USER: ${{ secrets.VPS_USER }}
-            DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-            DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PAT }}
-            DOCKERHUB_REPO: ${{ vars.DOCKERHUB_REPO }}
+            VPS_SSH_HOST:     ${{ secrets.VPS_HOST }}
+            VPS_SSH_KEY:      ${{ secrets.VPS_SSH }}
+            VPS_SSH_USER:     ${{ secrets.VPS_USER }}
+            DOCKERHUB_USER:   ${{ secrets.DOCKERHUB_USERNAME }}
+            DOCKERHUB_PASS:   ${{ secrets.DOCKERHUB_PAT }}
+            DOCKERHUB_REPO:   ${{ vars.DOCKERHUB_REPO }}
           
           # Temporarily write the SSH key to a file, use that to SSH in, execute commands, then remove the file
           run: |

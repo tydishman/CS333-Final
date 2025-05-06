@@ -1,4 +1,24 @@
 from flask import url_for
+import pytest
+
+class TestUnauthorized:
+    get_protected_routes = [
+        "/dashboard/",
+        "/tips/",
+        "/calendar/",
+        "/budget/",
+        "/logout/",
+    ]
+    @pytest.mark.parametrize("route", get_protected_routes)
+    def test_tips_route_get_unauthorized(self, route, client):
+        response = client.get(route, follow_redirects=False)
+        assert response.status_code == 302
+
+    @pytest.mark.parametrize("route", get_protected_routes)
+    def test_tips_route_get_unauthorized_redirect(self, route, client):
+        response = client.get(route, follow_redirects=True)
+        assert response.status_code == 200
+        assert response.request.path == url_for('landing')
 
 class TestSignup:
     def test_signup_success(self, client, mocker):

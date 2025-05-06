@@ -63,21 +63,21 @@ def analyze_spending(user_income, user_rent, user_food, user_spending, user_savi
     }
 
 # Example usage
-if __name__ == "__main__":
-    user_income = 4000
-    user_rent = 1600
-    user_food = 700
-    user_spending = 450
-    user_savings = 500
+# if __name__ == "__main__":
+#     user_income = 4000
+#     user_rent = 1600
+#     user_food = 700
+#     user_spending = 450
+#     user_savings = 500
 
-    # Get spending analysis
-    spending_analysis = analyze_spending(user_income, user_rent, user_food, user_spending, user_savings)
+#     # Get spending analysis
+#     spending_analysis = analyze_spending(user_income, user_rent, user_food, user_spending, user_savings)
 
-    print("Spending Analysis:")
-    for category, analysis in spending_analysis.items():
-        print(f"- {category}: {analysis}")
+#     print("Spending Analysis:")
+#     for category, analysis in spending_analysis.items():
+#         print(f"- {category}: {analysis}")
 
-    # Get budgeting tips from Gemini model
-    budget_tips = get_budget_tips(user_income, user_rent, user_food, user_spending, user_savings)
-    print("\nBudgeting Tips:")
-    print(budget_tips)
+#     # Get budgeting tips from Gemini model
+#     budget_tips = get_budget_tips(user_income, user_rent, user_food, user_spending, user_savings)
+#     print("\nBudgeting Tips:")
+#     print(budget_tips)
