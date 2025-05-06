@@ -9,13 +9,13 @@ class TestMyAuth:
         mocker.patch("db.create_category")
 
         result = my_auth.create_user("testuser", "test@email.com", "password123")
-        assert result is True
+        assert result == True
 
     def test_create_user_failure(self, mocker):
         mocker.patch("db.db_create_user", side_effect=Exception("Fail"))
 
         result = my_auth.create_user("testuser", "test@email.com", "password123")
-        assert result is False
+        assert result == False
 
     def test_init_default_categories(self, mocker):
         mock_create = mocker.patch("db.create_category")
@@ -27,29 +27,29 @@ class TestMyAuth:
         hashed_pw = generate_password_hash("secret")
         mocker.patch("db.get_user", return_value={"password_hash": hashed_pw})
 
-        assert my_auth.login_user("testuser", "secret") is True
+        assert my_auth.login_user("testuser", "secret") == True
 
     def test_login_user_invalid_password(self, mocker):
         hashed_pw = generate_password_hash("secret")
         mocker.patch("db.get_user", return_value={"password_hash": hashed_pw})
 
-        assert my_auth.login_user("testuser", "wrong") is False
+        assert my_auth.login_user("testuser", "wrong") == False
 
     def test_login_user_user_not_found(self, mocker):
         mocker.patch("db.get_user", return_value=None)
 
-        assert my_auth.login_user("ghost", "secret") is False
+        assert my_auth.login_user("ghost", "secret") == False
 
     def test_login_user_from_form_success(self, mocker):
         hashed_pw = generate_password_hash("secret")
         mocker.patch("db.get_user", return_value={"id": 1, "password_hash": hashed_pw})
 
         user = my_auth.login_user_from_form("testuser", "secret")
-        assert user is not None
+        assert user != None
         assert user["id"] == 1
 
     def test_login_user_from_form_failure(self, mocker):
         mocker.patch("db.get_user", return_value=None)
 
         user = my_auth.login_user_from_form("ghost", "wrong")
-        assert user is None
+        assert user == None
